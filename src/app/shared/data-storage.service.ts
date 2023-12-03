@@ -26,31 +26,48 @@ export class DataStorageService {
   }
 
   fetchRecipes() {
-    return this.authService.user.pipe(
-      // take means we get values which we specified and unsubscribe after it.
-      // like below, we gather 1 user and unsubscribe this.
-      take(1),
+    // return this.authService.user.pipe(
+    //   // take means we get values which we specified and unsubscribe after it.
+    //   // like below, we gather 1 user and unsubscribe this.
+    //   take(1),
+    //
+    //   exhaustMap(user => {
 
-      exhaustMap(user => {
-        return this.http
-          .get<Recipe[]>(
-            'https://ng-course-recipe-book-b669a-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json'
-            , {
-              params: new HttpParams().set('auth', user.token)
-            }
-          );
-      }), map(recipes => {
-        return recipes.map(recipe => {
-          return {
-            ...recipe,
-            ingredients: recipe.ingredients ? recipe.ingredients : []
-          };
-        });
-      }),
-      tap(recipes => {
-        this.recipeService.setRecipes(recipes);
-      })
-    )
+    //     return this.http
+    //       .get<Recipe[]>(
+    //         'https://ng-course-recipe-book-b669a-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json'
+    //         , {
+    //           params: new HttpParams().set('auth', user.token)
+    //         }
+    //       );
+    //   }), map(recipes => {
+    //     return recipes.map(recipe => {
+    //       return {
+    //         ...recipe,
+    //         ingredients: recipe.ingredients ? recipe.ingredients : []
+    //       };
+    //     });
+    //   }),
+    //   tap(recipes => {
+    //     this.recipeService.setRecipes(recipes);
+    //   })
+    // )
+
+    return this.http
+      .get<Recipe[]>(
+        'https://ng-course-recipe-book-b669a-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json'
+      ).pipe(map(recipes => {
+          return recipes.map(recipe => {
+            return {
+              ...recipe,
+              ingredients: recipe.ingredients ? recipe.ingredients : []
+            };
+          });
+        }),
+        tap(recipes => {
+          this.recipeService.setRecipes(recipes);
+        })
+      )
 
     // return this.http
     //   .get<Recipe[]>(
