@@ -2,8 +2,9 @@
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse"
-              data-target="#myNavbar" aria-controls="myNavbar" (click)="isShown = !isShown"
-              aria-label="Toggle navigation">
+              data-target="#myNavbar" aria-controls="myNavbar"
+              aria-label="Toggle navigation" appDropdown #r="appDropdown"
+      >
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -13,7 +14,7 @@
     </div>
 
 
-    <div class="collapse navbar-collapse" id="myNavbar" [ngClass]="{ 'show': isShown }">
+    <div class="collapse navbar-collapse" id="myNavbar" [ngClass]="{ 'show': r.isShown }">
       <ul class="nav navbar-nav">
         <li routerLinkActive="active"><a routerLink="/recipes" *ngIf="isAuthenticated">Recipes</a></li>
         <li routerLinkActive="active"><a routerLink="/auth" *ngIf="!isAuthenticated">Authentication</a></li>
