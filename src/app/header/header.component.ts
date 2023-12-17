@@ -11,6 +11,9 @@ import {Subscription} from "rxjs";
 export class HeaderComponent implements OnInit, OnDestroy{
   isAuthenticated: boolean = false;
   private userSub: Subscription;
+  isCollapsed = false;
+  isShown = false;
+  tt = false;
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe(user => {
       this.isAuthenticated = !!user;

@@ -1,14 +1,23 @@
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse"
+              data-target="#myNavbar" aria-controls="myNavbar" (click)="isShown = !isShown"
+              aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
       <a routerLink="/recipes" class="navbar-brand">Recipe Book</a>
     </div>
 
-    <div class="collapse navbar-collapse">
+
+    <div class="collapse navbar-collapse" id="myNavbar" [ngClass]="{ 'show': isShown }">
       <ul class="nav navbar-nav">
         <li routerLinkActive="active"><a routerLink="/recipes" *ngIf="isAuthenticated">Recipes</a></li>
         <li routerLinkActive="active"><a routerLink="/auth" *ngIf="!isAuthenticated">Authentication</a></li>
-        <li routerLinkActive="active"><a routerLink="/shopping-list" >Shopping List</a></li>
+        <li routerLinkActive="active"><a routerLink="/shopping-list">Shopping List</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
