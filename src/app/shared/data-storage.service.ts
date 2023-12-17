@@ -7,6 +7,8 @@ import {RecipeService} from '../recipes/recipe.service';
 import {AuthService} from "../auth/auth.service";
 
 @Injectable({providedIn: 'root'})
+// You can add this service in the app module's provider, at that time injectable option should be below
+// @Injectable()
 export class DataStorageService {
   constructor(private http: HttpClient,
               private recipeService: RecipeService,
