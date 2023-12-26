@@ -1,173 +1,82 @@
-import {Injectable} from "@angular/core";
-import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
-import {catchError, tap} from "rxjs/operators";
-import {BehaviorSubject, throwError} from "rxjs";
-import {Subject} from "rxjs/Subject";
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Subject, throwError} from "rxjs";
 import {User} from "./user.model";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
-import {environment} from "../../environments/environment";
+import {catchError, tap} from "rxjs/operators";
+import {AuthComponent} from "./auth.component";
+import {Board} from "../board/board.model";
 
-export interface AuthResponseData {
-  kind: string;
-  idToken: string;
-  email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
-  registered?: boolean;
-}
 
 @Injectable({
-  providedIn: 'root',
-
+  providedIn: 'root'
 })
 export class AuthService {
+  user = new BehaviorSubject(null);
+  error: Subject<any> = new Subject<any>();
+  registerUrl = "http://localhost:8000/api/register/";
+  loginUrl = "http://localhost:8000/api/token/";
 
-  // user = new Subject<User>();
-  // Behavior subject has initial data and if it is changed, the value would emit
-  // even if we don't subscribe that, it emits initial value.
-  user = new BehaviorSubject<User>(null);
-  private tokenExpirationTimer: any;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private httpClient: HttpClient,
+    private router: Router,
+  ) {
   }
 
-  signup(email: string, password: string) {
-    // expect the response data model with AuthResponseData
-    // Document: https://firebase.google.com/docs/reference/rest/auth?hl=ko#section-create-email-password
-    return this.http.post<AuthResponseData>(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + environment.firebaseAPIKey,
-      {
-        email: email,
-        password: password,
-        returnSecureToken: true,
-      }
-    ).pipe(catchError(this.handleError), tap(
-      resData => {
-        this.handleAuthentication(
-          resData.email,
-          resData.localId,
-          resData.idToken,
-          +resData.expiresIn)
-        // const expirationDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);
-        // const user = new User(
-        //   resData.email,
-        //   resData.localId,
-        //   resData.idToken,
-        //   expirationDate,
-        // )
-        // this.user.next(user);
-      }))
+  login(user: User) {
+    this.httpClient.post<User>(this.loginUrl, user)
+      .pipe(catchError((errorRes: HttpErrorResponse) => {
+        let errorMessage = errorRes.error;
+        // this.onChangeErrorMessage(errorMessage.detail);
+        this.error.next(errorMessage.detail);
+
+        if (!errorRes.error) {
+          return throwError(errorMessage.error);
+        }
+        return throwError(errorMessage);
+      })).subscribe(res => {
+          this.handleAuthentication(
+            res.email,
+            res.id,
+            res.access,
+            res.refresh);
+          this.router.navigate(['/']);
+        });
   }
 
-  //   catchError(errorRes => {
-  //   let errorMessage = 'An unknown error occurred!'
-  //   if (!errorRes.error || !errorRes.error.error) {
-  //     return throwError(errorMessage);
-  //   }
-  //   switch (errorRes.error.error.message) {
-  //     case 'EMAIL_EXISTS':
-  //       errorMessage = 'This email exists already';
-  //   }
-  //   return throwError(errorMessage);
-  // })
-  // );
-  // }
+  join(user: User) {
 
-  login(email: string, password: string) {
-    return this.http.post<AuthResponseData>(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + environment.firebaseAPIKey,
-      {
-        email: email,
-        password: password,
-        returnSecureToken: true,
-      }
-    ).pipe(catchError(this.handleError), tap(
-      resData => {
-        this.handleAuthentication(
-          resData.email,
-          resData.localId,
-          resData.idToken,
-          +resData.expiresIn)
-      }))
+    this.httpClient.post<User>(this.registerUrl, user).subscribe(res => {
+      this.user.next(res);
+      this.router.navigate(['/']);
+    })
   }
 
   logout() {
     this.user.next(null);
-    this.router.navigate(['/auth']);
-    // localStorage.clear();
-    localStorage.removeItem('userData');
-
-    if (this.tokenExpirationTimer) {
-      clearTimeout(this.tokenExpirationTimer);
-    }
-    this.tokenExpirationTimer = null;
+    this.router.navigate(['/']);
   }
 
-  autoLogin() {
-    const userData: {
-      email: string;
-      id: string;
-      _token: string;
-      _tokenExpirationDate: string;
-    } = JSON.parse(localStorage.getItem('userData'));
-    if (!userData) {
-      return;
-    }
-
-    const loadedUser = new User(
-      userData.email,
-      userData.id,
-      userData._token,
-      new Date(userData._tokenExpirationDate)
-    )
-
-    if (loadedUser.token) {
-      this.user.next(loadedUser);
-      const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
-      this.autoLogout(expirationDuration);
-    }
-  }
-
-  autoLogout(expirationDuration: number) {
-    console.log(expirationDuration);
-    this.tokenExpirationTimer = setTimeout(() => {
-      this.logout();
-    }, expirationDuration);
-    // 2 seconds later, it's logout.
-    // }, 2000);
-  }
-
-  private handleAuthentication(email: string, userId: string, token: string, expiresIn: number) {
-    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-    const user = new User(
-      email,
-      userId,
-      token,
-      expirationDate,
-    )
-    this.user.next(user);
-    // call auto logout method (it keeps login status during the expiration time)
-    this.autoLogout(expiresIn * 1000);
-    localStorage.setItem('userData', JSON.stringify(user));
-  }
-
-  private handleError(errorRes: HttpErrorResponse) {
-    let errorMessage = 'An unknown error occurred!'
-    if (!errorRes.error || !errorRes.error.error) {
+  private handlerError(errorRes: HttpErrorResponse) {
+    let errorMessage = errorRes.error;
+    if (!errorRes.error) {
       return throwError(errorMessage);
-    }
-    console.log(errorRes);
-    switch (errorRes.error.error.message) {
-      case 'EMAIL_EXISTS':
-        errorMessage = 'This email exists already';
-        break;
-      case 'INVALID_LOGIN_CREDENTIALS':
-        errorMessage = 'This credential is invalid.'
-        break;
     }
     return throwError(errorMessage);
   }
 
+  onChangeErrorMessage(errorMessage: string) {
+    console.log(errorMessage);
+  }
 
+  private handleAuthentication(email: string, id: string, access: string, refresh: string) {
+    const user = {
+      id: id,
+      email: email,
+      access: access,
+      refresh: refresh,
+    }
+    this.user.next(user);
+  }
 }

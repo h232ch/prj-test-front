@@ -2,33 +2,30 @@
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse"
-              data-target="#myNavbar" aria-controls="myNavbar"
-              aria-label="Toggle navigation" appDropdown #r="appDropdown"
-      >
+              appDropdownHeader #r="appDropdownHeader">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a routerLink="/recipes" class="navbar-brand">Recipe Book</a>
+      <a routerLink="/" class="navbar-brand">Angular First App</a>
     </div>
 
-
-    <div class="collapse navbar-collapse" id="myNavbar" [ngClass]="{ 'show': r.isShown }">
+    <div class="collapse navbar-collapse" [ngClass]="{ 'show': r.isShown }">
       <ul class="nav navbar-nav">
-        <li routerLinkActive="active"><a routerLink="/recipes" *ngIf="isAuthenticated">Recipes</a></li>
-        <li routerLinkActive="active"><a routerLink="/auth" *ngIf="!isAuthenticated">Authentication</a></li>
-        <li routerLinkActive="active"><a routerLink="/shopping-list">Shopping List</a></li>
+        <li routerLinkActive="active" *ngIf="isAuthenticated"><a routerLink="/boards">Board</a></li>
+        <li routerLinkActive="active" *ngIf="!isAuthenticated"><a routerLink="/auth">Authentication</a></li>
       </ul>
+
       <ul class="nav navbar-nav navbar-right">
         <li>
           <a style="cursor: pointer;" *ngIf="isAuthenticated" (click)="onLogout()">Logout</a>
         </li>
         <li class="dropdown" appDropdown *ngIf="isAuthenticated">
-          <a style="cursor: pointer;" class="dropdown-toggle" role="button">Manage <span class="caret"></span></a>
+          <a style="cursor: pointer;" class="dropdown-toggle" role="button" *ngIf="isAuthenticated">{{ user.email }}
+            <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a style="cursor: pointer;" (click)="onSaveData()">Save Data</a></li>
-            <li><a style="cursor: pointer;" (click)="onFetchData()">Fetch Data</a></li>
+            <li><a style="cursor: pointer;"> User information </a></li>
           </ul>
         </li>
       </ul>

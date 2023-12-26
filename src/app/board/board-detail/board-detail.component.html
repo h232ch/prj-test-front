@@ -1,0 +1,38 @@
+<div class="row" *ngIf="board">
+  <div class="col-sm-12">
+    <h2>{{ board.title }}</h2>
+  </div>
+</div>
+
+<br>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="btn-group" appDropdown>
+      <button
+        type="button"
+        class="btn btn-default dropdown-toggle">
+        Manage board <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a style="cursor: pointer;" (click)="onEditBoard()">Edit board</a></li>
+          <li><a style="cursor: pointer;" (click)="onDeleteBoard()">Delete board</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<br>
+<div class="row" *ngIf="board">
+  <div class="col-xs-12">
+    <p>User : {{ board.email }}</p>
+  </div>
+</div>
+
+<br>
+
+<div class="row" *ngIf="board">
+  <div class="col-xs-12">
+    <p>{{ board.content }}</p>
+  </div>
+</div>

@@ -1,36 +1,30 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DataStorageService} from "../shared/data-storage.service";
-import {RecipeService} from "../recipes/recipe.service";
 import {AuthService} from "../auth/auth.service";
 import {Subscription} from "rxjs";
+import {User} from "../auth/user.model";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html'
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit, OnDestroy{
-  isAuthenticated: boolean = false;
-  private userSub: Subscription;
-  isCollapsed = false;
-  isShown = false;
-  tt = false;
+export class HeaderComponent implements OnInit, OnDestroy {
+  isAuthenticated = false;
+  userSub = new Subscription();
+  user: User;
+
+  constructor(
+    private authService: AuthService,
+  ) {
+  }
+
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe(user => {
       this.isAuthenticated = !!user;
-      console.log(!user);
-      console.log(!!user);
-    });
-  }
-  constructor(private dataStorageService: DataStorageService,
-              private authService: AuthService,) {
-  }
+      this.user = user;
+    })
 
-  onSaveData() {
-    this.dataStorageService.storeRecipes();
-  }
-
-  onFetchData() {
-    this.dataStorageService.fetchRecipes().subscribe();
   }
 
   ngOnDestroy(): void {
@@ -40,6 +34,4 @@ export class HeaderComponent implements OnInit, OnDestroy{
   onLogout() {
     this.authService.logout();
   }
-
-
 }

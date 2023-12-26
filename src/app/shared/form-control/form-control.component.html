@@ -1,0 +1,8 @@
+<!-- form-control.component.html -->
+<div class="form-group">
+  <label [for]="id">{{ label }}</label>
+  <input [type]="type" [id]="id" [class]="inputClass" [formControlName]="controlName">
+  <div *ngIf="hasError && formControl.hasError('required') && formControl.touched" class="help-block">
+    {{ errorMessage }}
+  </div>
+</div>

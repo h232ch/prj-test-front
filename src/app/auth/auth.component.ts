@@ -1,95 +1,85 @@
-import {Component, ComponentFactoryResolver, OnDestroy, ViewChild} from "@angular/core";
-import {NgForm} from "@angular/forms";
-import {AuthResponseData, AuthService} from "./auth.service";
-import {Observable, Subscription} from "rxjs";
-import {Router} from "@angular/router";
-import {AlertComponent} from "../shared/alert/alert.component";
-import {PlaceholderDirective} from "../shared/placeholder/placeholder.directive";
+import {Component, Input, OnInit} from '@angular/core';
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {User} from "./user.model";
+import {AuthService} from "./auth.service";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-auth',
-  templateUrl: './auth.component.html'
+  templateUrl: './auth.component.html',
+  styleUrls: ['./auth.component.css']
 })
-export class AuthComponent {
-  isLoginMode = true;
+export class AuthComponent implements OnInit {
+  userForm: FormGroup;
+  loginMode = true;
   isLoading = false;
-  error: string = null;
-  // @ViewChild(PlaceholderDirective, {static: false}) alertHost: PlaceholderDirective;
-  //
-  // private closeSub: Subscription;
-  constructor(private authService: AuthService,
-              private router: Router,
-              private componentFactoryResolver: ComponentFactoryResolver) {
+  error: string;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {
+
+  }
+
+  ngOnInit(): void {
+    this.authService.error.subscribe(res => {
+      this.error = res;
+    })
+    this.initForm();
+  }
+
+  private initForm() {
+    if (this.loginMode) {
+      this.userForm = new FormGroup({
+        userData: new FormGroup({
+          'email': new FormControl<string>('',
+            [
+              Validators.email,
+              Validators.required
+            ]),
+          'password': new FormControl<string>('', [
+            Validators.minLength(6),
+            Validators.required
+          ]),
+        })
+      });
+    } else {
+      this.userForm = new FormGroup({
+        userData: new FormGroup({
+          'email': new FormControl<string>('',
+            [
+              Validators.email,
+              Validators.required
+            ]),
+          'password': new FormControl<string>('', [
+            Validators.minLength(6),
+            Validators.required
+          ])
+        })
+      })
+    }
+  }
+
+  onSubmit() {
+    this.isLoading = true;
+
+    if (this.loginMode) {
+      const user: User = this.userForm.value.userData;
+      this.authService.login(user);
+    } else {
+      const user: User = this.userForm.value.userData;
+      this.authService.join(user);
+    }
+    this.isLoading = false;
   }
 
   onSwitchMode() {
-    this.isLoginMode = !this.isLoginMode;
-  }
-  onSubmit(form: NgForm) {
-    if (!form.valid) {
-      return;
-    }
-
-    const email = form.value.email;
-    const password = form.value.password;
-
-    // repeat code is improved with authObs
-    let authObs: Observable<AuthResponseData>;
-
-    this.isLoading = true;
-    if (this.isLoginMode) {
-      authObs = this.authService.login(email, password)
-    } else {
-      authObs = this.authService.signup(email, password)
-    }
-
-    // authObs works like below! (we don't use repeated code anymore)
-    authObs.subscribe(
-      resData => {
-        console.log(resData);
-        this.isLoading = false;
-        this.error = null;
-        this.router.navigate(['/recipes']);
-      }, errorMessage => {
-        console.log(errorMessage);
-        this.error = errorMessage;
-
-        // this.showErrorAlert(errorMessage);
-        this.isLoading = false;
-      }
-    )
-
-    form.reset();
-
-    this.authService.user.subscribe(
-      user => {
-        console.log(user);
-      }
-    );
+    this.loginMode = !this.loginMode;
+    this.initForm();
   }
 
   onHandleError() {
     this.error = null;
   }
-  // Dynamic component is a little bit hard to understand and
-  // Ngif approach is recommended if you don't use third party component.
-
-  // private showErrorAlert(message: string) {
-  //   // const alertCmp = new AlertComponent();
-  //   const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
-  //   const hostViewContainerRef = this.alertHost.viewContainerRef;
-  //   hostViewContainerRef.clear();
-  //   const componentRef = hostViewContainerRef.createComponent(alertCmpFactory);
-  //   componentRef.instance.message = message;
-  //   this.closeSub = componentRef.instance.close.subscribe(() => {
-  //     this.closeSub.unsubscribe();
-  //     hostViewContainerRef.clear();
-  //   });
-  // }
-
-  // ngOnDestroy(): void {
-  //   if (this.closeSub) {
-  //     this.closeSub.unsubscribe();
-  //   }
-  // }
 }
