@@ -101,8 +101,6 @@ export class BoardService extends DataStorageService<Board> {
       this.currentPage.next(1);
 
       this.startPage.next(1);
-      this.pageSize.next(4);
-
       this.getBoards();
       this.router.navigate(['/boards/' + res.id])
     })
@@ -118,6 +116,8 @@ export class BoardService extends DataStorageService<Board> {
   deleteBoard(id: number) {
     this.delete(id).subscribe(res => {
       this.getBoards();
+
+      this.startPage.next(1);
       this.router.navigate(['/boards']);
     })
   }
