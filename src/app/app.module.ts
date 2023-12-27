@@ -20,6 +20,7 @@ import {BoardService} from "./board/board.service";
 import { FormControlComponent } from './shared/form-control/form-control.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { AlertComponent } from './shared/alert/alert.component';
+import { PaginationComponent } from './shared/pagination/pagination.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { AlertComponent } from './shared/alert/alert.component';
     FormControlComponent,
     LoadingSpinnerComponent,
     AlertComponent,
+    PaginationComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,7 +49,6 @@ import { AlertComponent } from './shared/alert/alert.component';
     HttpClientModule,
   ],
   providers: [
-    BoardService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,

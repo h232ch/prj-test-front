@@ -6,6 +6,7 @@ import {Board} from "../board.model";
 import {Observable} from "rxjs";
 import {AuthService} from "../../auth/auth.service";
 import {User} from "../../auth/user.model";
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'app-board-edit',
@@ -18,6 +19,7 @@ export class BoardEditComponent implements OnInit {
   id: number;
   editMode = false;
   user: any;
+  private currentPage: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,6 +30,9 @@ export class BoardEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // this.route.queryParams.subscribe(params => {
+    //   this.currentPage = params['page'];
+    // })
     this.route.params.subscribe(
       (params: Params) => {
         this.id = +params['id']; // Convert id to number
@@ -38,20 +43,21 @@ export class BoardEditComponent implements OnInit {
   }
 
   onSubmit() {
+
     this.authService.user.subscribe(res => {
       const user = res;
       const boardData = this.boardForm.value.boardData;
       const board = this.onChangeBoard(boardData, user);
 
       if (this.editMode) {
-        this.boardService.updateBoard(this.id, board);
+        this.boardService.updateBoard(this.id, board, this.currentPage);
       } else {
         this.boardService.createBoard(board);
       }
     })
   }
 
-  onChangeBoard(boardData , user: User): Board {
+  onChangeBoard(boardData, user: User): Board {
     if (this.editMode) {
       return {
         id: undefined, // Assuming the server will provide the ID
@@ -59,7 +65,7 @@ export class BoardEditComponent implements OnInit {
         email: undefined,
         title: boardData.title,
         content: boardData.content,
-        published: '2023-12-12',
+        published: boardData.published,
       }
     }
     return {
@@ -68,7 +74,7 @@ export class BoardEditComponent implements OnInit {
       email: user.email,
       title: boardData.title,
       content: boardData.content,
-      published: '2023-12-12',
+      published: new Date(),
     }
   }
 
@@ -98,4 +104,5 @@ export class BoardEditComponent implements OnInit {
       });
     }
   }
+
 }

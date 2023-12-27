@@ -1,21 +1,28 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {Observable, Subject, Subscription} from "rxjs";
-import {Board} from "./board.model";
+import {Board, BoardPagination} from "./board.model";
 import {DataStorageService} from "../shared/data-storage.service";
 import {HttpClient} from "@angular/common/http";
 import {ActivatedRoute, Router} from "@angular/router";
+import {map} from "rxjs/operators";
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class BoardService extends DataStorageService<Board>{
+export class BoardService extends DataStorageService<Board> {
 
-  boardsChanged: Subject<Board[]> = new Subject<Board[]>();
+  boardsChanged: Subject<Board[] | BoardPagination['results'][]> = new Subject<Board[] | BoardPagination['results'][]>();
   boardChanged: Subject<Board> = new Subject<Board>();
-  private boards: Board[] = [];
+  boardPagination: Subject<BoardPagination> = new Subject<BoardPagination>();
+
+  currentPage: Subject<number> = new Subject<number>();
+  startPage: Subject<number> = new Subject<number>();
+  pageSize: Subject<number> = new Subject<number>();
+
+  private boards: Board[] | BoardPagination['results'][] | any;
   private board: Board;
-  subscription: Subscription;
+
 
   constructor(
     private httpClient: HttpClient,
@@ -26,6 +33,10 @@ export class BoardService extends DataStorageService<Board>{
 
   getAll(): Observable<Board[]> {
     return this.httpClient.get<Board[]>(this.apiUrl);
+  }
+
+  getPaginationPage(id: number): Observable<BoardPagination> {
+    return this.httpClient.get<BoardPagination>(`${this.apiUrl}?page=${id}`)
   }
 
   getById(id: number): Observable<Board> {
@@ -44,20 +55,40 @@ export class BoardService extends DataStorageService<Board>{
     return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getBoards(): Board[] {
-    this.getAll().subscribe(res => {
-      this.boards = res;
-      this.boardsChanged.next(this.boards.slice())
+  getBoards(): Board[] | BoardPagination['results'][] {
+    this.getAll().subscribe((res: Board[] | BoardPagination | any) => {
+      if (res['results']) {
+        const boardPagination: BoardPagination = res;
+        this.boardPagination.next(boardPagination);
+        this.boards = res['results'];
+      } else {
+        this.boards = res;
+      }
+      this.boardsChanged.next(this.boards.slice());
+
     })
     return this.boards;
   }
 
-  updateBoard(id: number, board: Board) {
+  getBoardsPagination(id: number) {
+    return this.getPaginationPage(id).subscribe(res => {
+      this.boardPagination.next(res);
+      this.boards = res['results'];
+      this.boardsChanged.next(this.boards.slice());
+    })
+  }
+
+  updateBoard(id: number, board: Board, page: number) {
     this.update(id, board).subscribe(res => {
       this.getBoards();
       this.board = res;
       this.boardChanged.next(this.board);
-      this.router.navigate(['/boards/' + res.id])
+      this.currentPage.next(1);
+
+      this.startPage.next(1);
+      this.pageSize.next(4);
+
+      this.router.navigate(['/boards/' + res.id]);
     })
   }
 
@@ -65,7 +96,14 @@ export class BoardService extends DataStorageService<Board>{
     this.create(board).subscribe(res => {
       this.getBoards();
       this.board = res;
+
       this.boardChanged.next(res);
+      this.currentPage.next(1);
+
+      this.startPage.next(1);
+      this.pageSize.next(4);
+
+      this.getBoards();
       this.router.navigate(['/boards/' + res.id])
     })
   }
@@ -83,49 +121,4 @@ export class BoardService extends DataStorageService<Board>{
       this.router.navigate(['/boards']);
     })
   }
-
 }
-
-
-  // boardsChanged: Subject<Board[]> = new Subject<Board[]>();
-  // private boards: Board[] = []
-
-  // boards: Board[];
-  // getBoards() {
-    // this.httpClient.get<Board[]>(
-    //   "http://localhost:8000/api/board",
-    // ).subscribe(res => {
-    //   this.boards = res;
-    // })
-  //   this.boardsChanged.next(this.boards.slice())
-  // }
-
-  // setBoards(boards: Board[]) {
-  //   this.boards = boards;
-  //   this.boardsChanged.next(boards.slice());
-  // }
-  //
-  // addBoard(board: Board) {
-  //   this.boards.push(board);
-  //   this.boardsChanged.next(this.boards.slice());
-  // }
-  //
-  // getBoard(id: number) {
-  //   return this.boards[id];
-  // }
-  //
-  // setBoard(board: Board) {
-  //   this.boards.push(board);
-  // //   Todo : http request
-  // }
-  //
-  // deleteBoard(id: number) {
-  //   this.boards.splice(id, 1);
-  //   this.boardsChanged.next(this.boards);
-  // }
-  //
-  // updateBoard(id: number, board: Board) {
-  //   this.boards[id] = board;
-  //   this.boardsChanged.next(this.boards.slice());
-  // }
-// }

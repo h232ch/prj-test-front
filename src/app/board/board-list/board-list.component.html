@@ -2,15 +2,16 @@
   <div class="col-sm-12">
     <button class="btn btn-default"
             (click)="onNewBoard()"
-    >New board</button>
+    >New board
+    </button>
   </div>
 </div>
 <hr>
 <div class="row">
   <div class="col-sm-12"
        *ngFor="let board of boards;"
-    >
-<!--    trackby -->
+  >
+    <!--    trackby -->
     <a style="cursor: pointer"
        routerLinkActive="active"
        [routerLink]=board.id
@@ -22,5 +23,30 @@
     </a>
   </div>
 </div>
+
+<!--<div class="row" *ngIf="boardsPagination">-->
+<!--  <div class="col-sm-12">-->
+<!--    <ul class="pagination">-->
+<!--      <li><a (click)="previousPage()" style="cursor: pointer">&laquo;</a></li>-->
+<!--      <li><a *ngFor="let page of pages" (click)="changePage(page)" style="cursor: pointer">{{ page }}</a></li>-->
+<!--      <li><a (click)="nextPage()" style="cursor: pointer">&raquo;</a></li>-->
+<!--    </ul>-->
+<!--  </div>-->
+<!--</div>-->
+
+
+<div class="row">
+  <div class="col-sm-12">
+    <app-pagination
+      [currentPage]="currentPage"
+      [itemsPerPage]="itemsPerPage"
+      [totalItems]="totalItems"
+      [startPage]="startPage"
+      [pageSize]="pageSize"
+      (pageChanged)="onPageChange($event)"
+    ></app-pagination>
+  </div>
+</div>
+
 
 

@@ -23,7 +23,7 @@ export class AuthInterceptorService implements HttpInterceptor{
 
         const modifiedReq: HttpRequest<any> = req.clone({
           // temporary authentication token is user.phone
-          // headers: new HttpHeaders().set('auth', user.email),
+          headers: new HttpHeaders().set('Authorization', 'Bearer ' + user.access),
         });
         return next.handle(modifiedReq);
       })

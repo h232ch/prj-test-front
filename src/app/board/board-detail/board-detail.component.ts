@@ -36,7 +36,9 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
 
   onEditBoard() {
     this.router.navigate(['edit'],
-      {relativeTo: this.route});
+      {
+        relativeTo: this.route,
+      });
   }
 
   onDeleteBoard() {

@@ -28,7 +28,6 @@ export class AuthService {
     this.httpClient.post<User>(this.loginUrl, user)
       .pipe(catchError((errorRes: HttpErrorResponse) => {
         let errorMessage = errorRes.error;
-        // this.onChangeErrorMessage(errorMessage.detail);
         this.error.next(errorMessage.detail);
 
         if (!errorRes.error) {
@@ -36,21 +35,28 @@ export class AuthService {
         }
         return throwError(errorMessage);
       })).subscribe(res => {
-          this.handleAuthentication(
-            res.email,
-            res.id,
-            res.access,
-            res.refresh);
-          this.router.navigate(['/']);
-        });
+      this.handleAuthentication(
+        res.email,
+        res.id,
+        res.access,
+        res.refresh);
+    });
   }
 
   join(user: User) {
+    this.httpClient.post<User>(this.registerUrl, user)
+      .pipe(catchError((errorRes: HttpErrorResponse) => {
+        let errorMessage = errorRes.error;
+        this.error.next(errorMessage.detail);
 
-    this.httpClient.post<User>(this.registerUrl, user).subscribe(res => {
-      this.user.next(res);
-      this.router.navigate(['/']);
-    })
+        if (!errorRes.error) {
+          return throwError(errorMessage.error);
+        }
+        return throwError(errorMessage);
+      }))
+      .subscribe(res => {
+        this.login(user);
+      })
   }
 
   logout() {
@@ -66,10 +72,6 @@ export class AuthService {
     return throwError(errorMessage);
   }
 
-  onChangeErrorMessage(errorMessage: string) {
-    console.log(errorMessage);
-  }
-
   private handleAuthentication(email: string, id: string, access: string, refresh: string) {
     const user = {
       id: id,
@@ -78,5 +80,25 @@ export class AuthService {
       refresh: refresh,
     }
     this.user.next(user);
+    localStorage.setItem('userData', JSON.stringify(user));
+    this.router.navigate(['/']);
+  }
+
+  autoLogin() {
+    const userData: User = JSON.parse(localStorage.getItem('userData'))
+    if (!userData) {
+      return;
+    }
+
+    const loadedUser: User = {
+      id: userData.id,
+      email: userData.email,
+      access: userData.access,
+      refresh: userData.refresh,
+    }
+
+    if (loadedUser.access) {
+      this.user.next(loadedUser);
+    }
   }
 }
