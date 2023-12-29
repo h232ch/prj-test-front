@@ -3,7 +3,7 @@ import {BehaviorSubject, Subject, throwError} from "rxjs";
 import {User} from "./user.model";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
-import {catchError, tap} from "rxjs/operators";
+import {catchError, take, tap} from "rxjs/operators";
 import {AuthComponent} from "./auth.component";
 import {Board} from "../board/board.model";
 
@@ -15,6 +15,7 @@ export class AuthService {
   user = new BehaviorSubject(null);
   error: Subject<any> = new Subject<any>();
   registerUrl = "http://localhost:8000/api/register/";
+  userUrl = "http://localhost:8000/api/users/"
   loginUrl = "http://localhost:8000/api/token/";
 
 
@@ -26,21 +27,17 @@ export class AuthService {
 
   login(user: User) {
     this.httpClient.post<User>(this.loginUrl, user)
-      .pipe(catchError((errorRes: HttpErrorResponse) => {
-        let errorMessage = errorRes.error;
-        this.error.next(errorMessage.detail);
-
-        if (!errorRes.error) {
-          return throwError(errorMessage.error);
+      .pipe(catchError(this.handlerError))
+      .subscribe(res => {
+          this.handleAuthentication(
+            res.email,
+            res.id,
+            res.access,
+            res.refresh);
+        }, errorMessage => {
+          this.error.next(errorMessage.detail);
         }
-        return throwError(errorMessage);
-      })).subscribe(res => {
-      this.handleAuthentication(
-        res.email,
-        res.id,
-        res.access,
-        res.refresh);
-    });
+      )
   }
 
   join(user: User) {
@@ -61,6 +58,7 @@ export class AuthService {
 
   logout() {
     this.user.next(null);
+    localStorage.removeItem('userData');
     this.router.navigate(['/']);
   }
 

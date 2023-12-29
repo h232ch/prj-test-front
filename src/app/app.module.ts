@@ -15,12 +15,12 @@ import {ReactiveFormsModule} from "@angular/forms";
 import { DropdownHeaderDirective } from './shared/dropdown-header.directive';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AuthInterceptorService} from "./auth/auth-interceptor.service";
-import {DataStorageService} from "./shared/data-storage.service";
-import {BoardService} from "./board/board.service";
 import { FormControlComponent } from './shared/form-control/form-control.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { AlertComponent } from './shared/alert/alert.component';
 import { PaginationComponent } from './shared/pagination/pagination.component';
+import { UserComponent } from './user/user.component';
+import { UserInfoComponent } from './user/user-info/user-info.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +38,8 @@ import { PaginationComponent } from './shared/pagination/pagination.component';
     LoadingSpinnerComponent,
     AlertComponent,
     PaginationComponent,
+    UserComponent,
+    UserInfoComponent,
   ],
   imports: [
     BrowserModule,

@@ -5,6 +5,15 @@
 </div>
 <br>
 
+<br>
+<div class="row" *ngIf="board">
+  <div class="col-xs-12">
+    <p>User | {{ board.email }}</p>
+    <p>Time | {{ board.published | date: 'yyyy-MM-dd HH:mm:ss '}}</p>
+  </div>
+</div>
+<br>
+
 <div class="row">
   <div class="col-xs-12">
     <div class="btn-group" appDropdown>
@@ -20,15 +29,7 @@
     </div>
   </div>
 </div>
-
-<br>
-<div class="row" *ngIf="board">
-  <div class="col-xs-12">
-    <p>User | {{ board.email }}</p>
-    <p>Time | {{ board.published | date: 'yy-MM-dd HH:mm:ss '}}</p>
-  </div>
-</div>
-<br>
+<hr>
 
 <div class="row" *ngIf="board">
   <div class="col-xs-12">

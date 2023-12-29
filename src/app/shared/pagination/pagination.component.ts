@@ -1,27 +1,43 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {BoardService} from "../../board/board.service";
-import {take} from "rxjs/operators";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.css']
 })
-export class PaginationComponent implements OnInit {
+export class PaginationComponent implements OnInit, OnDestroy {
   @Input() currentPage: number;
   @Input() itemsPerPage: number;
   @Input() totalItems: number;
   @Output() pageChanged: EventEmitter<number> = new EventEmitter();
   @Input() pageSize: number;
   @Input() startPage: number;
+  private staticPageSize = 4;
+
+  // Subscription values
+  private startPageSub: Subscription;
+  private boardsPagSub: Subscription;
+  private boardsCurrentPageSub: Subscription;
 
   constructor(private boardService: BoardService,) {}
 
+
   ngOnInit(): void {
-    this.boardService.startPage
+    this.startPageSub = this.boardService.startPage
       .subscribe(res => {
         this.startPage = res;
       });
+    this.boardsPagSub = this.boardService.boardPagination
+      .subscribe((res: any) => {
+        this.totalItems = res['count'];
+      }
+    )
+    this.boardsCurrentPageSub = this.boardService.currentPage
+      .subscribe(res => {
+      this.currentPage = res;
+    });
   }
 
   get totalPages(): number {
@@ -35,11 +51,11 @@ export class PaginationComponent implements OnInit {
   }
 
   get pageNumbers(): number[] {
-    if (this.totalPages <= 4) {
+    if (this.totalPages <= this.staticPageSize) {
       this.pageSize = this.totalPages;
 
     } else if (this.startPage == 1) {
-      this.pageSize = 4;
+      this.pageSize = this.staticPageSize;
     }
     return Array.from({length: this.pageSize},
       (_, index) => index + this.startPage);
@@ -51,7 +67,7 @@ export class PaginationComponent implements OnInit {
     }
     this.pageSize = 4;
     this.startPage = this.startPage - this.pageSize;
-    this.changePage(this.startPage + 3);
+    this.changePage(this.startPage + (this.staticPageSize - 1));
   }
 
   next() {
@@ -61,10 +77,16 @@ export class PaginationComponent implements OnInit {
     this.pageSize = 4;
     this.startPage = this.startPage + this.pageSize;
 
-    if ((this.startPage + 4) > this.totalPages) {
+    if ((this.startPage + this.staticPageSize) > this.totalPages) {
       this.pageSize = (this.totalPages + 1) - this.startPage;
     }
     this.changePage(this.startPage);
+  }
+
+  ngOnDestroy(): void {
+    this.startPageSub.unsubscribe();
+    this.boardsCurrentPageSub.unsubscribe();
+    this.boardsPagSub.unsubscribe();
   }
 
 }

@@ -1,10 +1,11 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {Observable, Subject, Subscription} from "rxjs";
+import {Observable, Subject, Subscription, throwError} from "rxjs";
 import {Board, BoardPagination} from "./board.model";
 import {DataStorageService} from "../shared/data-storage.service";
-import {HttpClient} from "@angular/common/http";
-import {ActivatedRoute, Router} from "@angular/router";
-import {map} from "rxjs/operators";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {Router} from "@angular/router";
+import {AuthService} from "../auth/auth.service";
+import {catchError} from "rxjs/operators";
 
 
 @Injectable({
@@ -27,6 +28,7 @@ export class BoardService extends DataStorageService<Board> {
   constructor(
     private httpClient: HttpClient,
     private router: Router,
+    private authService: AuthService,
   ) {
     super(httpClient, 'http://localhost:8000/api/boards');
   }
@@ -55,18 +57,21 @@ export class BoardService extends DataStorageService<Board> {
     return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getBoards(): Board[] | BoardPagination['results'][] {
-    this.getAll().subscribe((res: Board[] | BoardPagination | any) => {
-      if (res['results']) {
-        const boardPagination: BoardPagination = res;
-        this.boardPagination.next(boardPagination);
-        this.boards = res['results'];
-      } else {
-        this.boards = res;
-      }
-      this.boardsChanged.next(this.boards.slice());
-
-    })
+  getBoards(): Board[] {
+    this.getAll()
+      .pipe((catchError(this.errorHandler)))
+      .subscribe((res: Board[] | any) => {
+          if (res['results']) {
+            this.boardPagination.next(res);
+            this.boards = res['results'];
+          } else {
+            this.boards = res;
+          }
+          this.boardsChanged.next(this.boards.slice());
+        }, errorMessage => {
+          console.log(errorMessage)
+        }
+      )
     return this.boards;
   }
 
@@ -84,10 +89,8 @@ export class BoardService extends DataStorageService<Board> {
       this.board = res;
       this.boardChanged.next(this.board);
       this.currentPage.next(1);
-
       this.startPage.next(1);
       this.pageSize.next(4);
-
       this.router.navigate(['/boards/' + res.id]);
     })
   }
@@ -120,5 +123,13 @@ export class BoardService extends DataStorageService<Board> {
       this.startPage.next(1);
       this.router.navigate(['/boards']);
     })
+  }
+
+  errorHandler(errorRes: HttpErrorResponse) {
+    let errorMessage = errorRes.error;
+    if (!errorRes.error) {
+      return throwError(errorMessage.error);
+    }
+    return throwError(errorMessage);
   }
 }
