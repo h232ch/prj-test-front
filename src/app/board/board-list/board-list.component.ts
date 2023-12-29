@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Board, BoardPagination} from "../board.model";
+import {Board} from "../board.model";
 import {BoardService} from "../board.service";
 import {Subscription} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -11,7 +11,6 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class BoardListComponent implements OnInit, OnDestroy {
   boardsSub: Subscription;
-  boardsCurrentPageSub: Subscription;
 
   boards: Board[];
 

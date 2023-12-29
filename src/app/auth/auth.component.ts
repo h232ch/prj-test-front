@@ -1,29 +1,30 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {User} from "./user.model";
 import {AuthService} from "./auth.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
   loginMode = true;
   isLoading = false;
   error: string;
+  private errorSub: Subscription;
+  private authSub: Subscription;
 
   constructor(
     private authService: AuthService,
-    private router: Router,
   ) {
 
   }
 
   ngOnInit(): void {
-    this.authService.error.subscribe(res => {
+    this.errorSub = this.authService.error.subscribe(res => {
       this.error = res;
     })
     this.initForm();
@@ -66,10 +67,10 @@ export class AuthComponent implements OnInit {
 
     if (this.loginMode) {
       const user: User = this.userForm.value.userData;
-      this.authService.login(user);
+      this.authSub = this.authService.login(user);
     } else {
       const user: User = this.userForm.value.userData;
-      this.authService.join(user);
+      this.authSub = this.authService.join(user);
     }
     this.isLoading = false;
   }
@@ -81,5 +82,10 @@ export class AuthComponent implements OnInit {
 
   onHandleError() {
     this.error = null;
+  }
+
+  ngOnDestroy(): void {
+    this.errorSub.unsubscribe();
+    this.authSub.unsubscribe();
   }
 }

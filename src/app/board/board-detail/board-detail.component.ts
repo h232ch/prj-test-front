@@ -12,7 +12,7 @@ import {Subscription} from "rxjs";
 export class BoardDetailComponent implements OnInit, OnDestroy {
   board: Board;
   id: number;
-  subscription: Subscription;
+  boardSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -22,7 +22,7 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription = this.boardService.boardChanged.subscribe(res => {
+    this.boardSub = this.boardService.boardChanged.subscribe(res => {
         this.board = res;
       }
     )
@@ -46,6 +46,6 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.boardSub.unsubscribe();
   }
 }

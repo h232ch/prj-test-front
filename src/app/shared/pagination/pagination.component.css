@@ -1,3 +1,4 @@
 .pagination li a{
   color: black;
+  cursor: pointer;
 }

@@ -26,7 +26,7 @@ export class AuthService {
   }
 
   login(user: User) {
-    this.httpClient.post<User>(this.loginUrl, user)
+    return this.httpClient.post<User>(this.loginUrl, user)
       .pipe(catchError(this.handlerError))
       .subscribe(res => {
           this.handleAuthentication(
@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   join(user: User) {
-    this.httpClient.post<User>(this.registerUrl, user)
+    return this.httpClient.post<User>(this.registerUrl, user)
       .pipe(catchError((errorRes: HttpErrorResponse) => {
         let errorMessage = errorRes.error;
         this.error.next(errorMessage.detail);

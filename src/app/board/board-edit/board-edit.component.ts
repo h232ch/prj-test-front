@@ -1,25 +1,26 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {BoardService} from "../board.service";
 import {Board} from "../board.model";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {AuthService} from "../../auth/auth.service";
 import {User} from "../../auth/user.model";
-import {DatePipe} from "@angular/common";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-board-edit',
   templateUrl: './board-edit.component.html',
   styleUrls: ['./board-edit.component.css']
 })
-export class BoardEditComponent implements OnInit {
+export class BoardEditComponent implements OnInit, OnDestroy {
   boardForm: FormGroup;
-  board$: Observable<Board>;
+  boardObs: Observable<Board>;
   id: number;
   editMode = false;
   user: any;
   private currentPage: number;
+  private destroySub = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -30,10 +31,9 @@ export class BoardEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.route.queryParams.subscribe(params => {
-    //   this.currentPage = params['page'];
-    // })
-    this.route.params.subscribe(
+    this.route.params.pipe(
+      takeUntil(this.destroySub)
+    ).subscribe(
       (params: Params) => {
         this.id = +params['id']; // Convert id to number
         this.editMode = params['id'] !== undefined;
@@ -43,17 +43,14 @@ export class BoardEditComponent implements OnInit {
   }
 
   onSubmit() {
-
     this.authService.user.subscribe(res => {
       const user = res;
       const boardData = this.boardForm.value.boardData;
       const board = this.onChangeBoard(boardData, user);
 
-      if (this.editMode) {
-        this.boardService.updateBoard(this.id, board, this.currentPage);
-      } else {
-        this.boardService.createBoard(board);
-      }
+      return this.editMode
+        ? this.boardService.updateBoard(this.id, board, this.currentPage)
+        : this.boardService.createBoard(board);
     })
   }
 
@@ -93,8 +90,10 @@ export class BoardEditComponent implements OnInit {
     });
 
     if (this.editMode) {
-      this.board$ = this.boardService.getById(this.id);
-      this.board$.subscribe(board => {
+      this.boardObs = this.boardService.getById(this.id);
+      this.boardObs.pipe(
+        takeUntil(this.destroySub)
+      ).subscribe(board => {
         this.boardForm.patchValue({
           boardData: {
             title: board.title,
@@ -103,6 +102,11 @@ export class BoardEditComponent implements OnInit {
         });
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroySub.next();
+    this.destroySub.complete();
   }
 
 }

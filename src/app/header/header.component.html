@@ -19,13 +19,13 @@
 
       <ul class="nav navbar-nav navbar-right">
         <li>
-          <a style="cursor: pointer;" *ngIf="isAuthenticated" (click)="onLogout()">Logout</a>
+          <a *ngIf="isAuthenticated" (click)="onLogout()">Logout</a>
         </li>
         <li class="dropdown" appDropdown *ngIf="isAuthenticated">
-          <a style="cursor: pointer;" class="dropdown-toggle" role="button" *ngIf="isAuthenticated">{{ user.email }}
+          <a class="dropdown-toggle" role="button" *ngIf="isAuthenticated">{{ user.email }}
             <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a style="cursor: pointer;"> User information </a></li>
+            <li><a routerLink="/user/info"> User information </a></li>
           </ul>
         </li>
       </ul>
