@@ -27,18 +27,19 @@ import {RouterLinkActive} from "@angular/router";
     FormControlComponent,
     PaginationComponent,
     LoadingSpinnerComponent,
-    CommonModule,
 
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
 
-    AppRoutingModule,
-    HttpClientModule,
+    // AppRoutingModule,
+
   ],
   imports: [
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
+    HttpClientModule,
   ],
 })
 export class SharedModule {

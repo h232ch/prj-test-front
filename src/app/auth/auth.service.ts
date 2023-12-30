@@ -8,9 +8,7 @@ import {AuthComponent} from "./auth.component";
 import {Board} from "../board/board.model";
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AuthService {
   user = new BehaviorSubject(null);
   error: Subject<any> = new Subject<any>();

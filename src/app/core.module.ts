@@ -1,14 +1,13 @@
 import {NgModule} from "@angular/core";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {AuthInterceptorService} from "./auth/auth-interceptor.service";
+import {AuthInterceptorService} from "./auth/auth-interceptor/auth-interceptor.service";
+import {BoardService} from "./board/board.service";
+import {AuthService} from "./auth/auth.service";
 
 @NgModule({
-  declarations: [],
-  exports: [
-
-  ],
-  imports: [],
   providers: [
+    BoardService,
+    AuthService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,

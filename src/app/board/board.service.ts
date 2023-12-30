@@ -8,9 +8,7 @@ import {AuthService} from "../auth/auth.service";
 import {catchError} from "rxjs/operators";
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class BoardService extends DataStorageService<Board> {
 
   boardsChanged: Subject<Board[] | BoardPagination['results'][]> = new Subject<Board[] | BoardPagination['results'][]>();
@@ -28,7 +26,6 @@ export class BoardService extends DataStorageService<Board> {
   constructor(
     private httpClient: HttpClient,
     private router: Router,
-    private authService: AuthService,
   ) {
     super(httpClient, 'http://localhost:8000/api/boards');
   }

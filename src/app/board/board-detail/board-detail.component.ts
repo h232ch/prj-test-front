@@ -22,16 +22,19 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
     this.boardSub = this.boardService.boardChanged.subscribe(res => {
         this.board = res;
       }
     )
-    this.route.params.subscribe(
-      (params: Params) => {
-        this.id = params['id'];
-        this.boardService.getBoard(this.id);
-      }
-    )
+
+    // resolver will retrieve the detail of board
+    // this.route.params.subscribe(
+    //   (params: Params) => {
+    //     this.id = params['id'];
+    //     this.boardService.getBoard(this.id);
+    //   }
+    // )
   }
 
   onEditBoard() {

@@ -11,24 +11,23 @@ import {BoardModule} from "./board/board.module";
 import {HeaderModule} from "./header/header.module";
 import {SharedModule} from "./shared/shared.module";
 import {CoreModule} from "./core.module";
+import {UserModule} from "./user/user.module";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
     AppComponent,
-
     MainComponent,
-    UserComponent,
-    UserInfoComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    RouterLinkActive,
 
     SharedModule,
     AuthModule,
     BoardModule,
     HeaderModule,
+    UserModule,
     CoreModule,
   ],
   providers: [

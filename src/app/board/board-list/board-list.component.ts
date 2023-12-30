@@ -29,7 +29,6 @@ export class BoardListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this.boardsSub = this.boardService.boardsChanged
       .subscribe(
       (boards: Board[]) => {
@@ -37,7 +36,8 @@ export class BoardListComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.boards = this.boardService.getBoards();
+    // Resolver will retrieve a board data
+    // this.boards = this.boardService.getBoards();
   }
 
 
