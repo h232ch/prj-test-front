@@ -7,7 +7,7 @@ import {BoardEditComponent} from "../board-edit/board-edit.component";
 import {BoardDetailComponent} from "../board-detail/board-detail.component";
 import {BoardResolverService} from "../board-resolver/board-resolver-service";
 
-const appRoutes: Routes = [
+const routes: Routes = [
   {
     path: '',
     component: BoardComponent,
@@ -22,7 +22,7 @@ const appRoutes: Routes = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(appRoutes)],
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
 export class BoardRoutingModule {

@@ -7,9 +7,7 @@ import {PaginationComponent} from "./pagination/pagination.component";
 import {LoadingSpinnerComponent} from "./loading-spinner/loading-spinner.component";
 import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {AppRoutingModule} from "../app-routing.module";
 import {HttpClientModule} from "@angular/common/http";
-import {RouterLinkActive} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -31,9 +29,6 @@ import {RouterLinkActive} from "@angular/router";
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-
-    // AppRoutingModule,
-
   ],
   imports: [
     FormsModule,

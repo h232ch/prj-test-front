@@ -4,20 +4,17 @@ import {MainComponent} from "./main/main.component";
 
 
 const appRoutes: Routes = [
-   // Lazy loading
+  {path: 'main', component: MainComponent},
+  {path: '', redirectTo: '/main', pathMatch: 'full',},
+  // Lazy loading
   {
     path: 'boards',
     loadChildren: () => import('./board/board.module').then(m => m.BoardModule)
   },
-  {path: '', pathMatch: 'full', redirectTo: '/main'},
-  {path: 'main', component: MainComponent},
-
-
 ]
 
 @NgModule({
-  // imports: [RouterModule.forRoot(appRoutes, {preloadingStrategy: PreloadAllModules})],
-  imports: [RouterModule.forRoot(appRoutes,)],
+  imports: [RouterModule.forRoot(appRoutes, {preloadingStrategy: PreloadAllModules})],
   exports: [RouterModule]
 })
 export class AppRoutingModule {
