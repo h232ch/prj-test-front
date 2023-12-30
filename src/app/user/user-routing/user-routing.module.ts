@@ -5,7 +5,9 @@ import {UserInfoComponent} from "../user-info/user-info.component";
 
 const appRoutes: Routes = [
   {
-    path: 'user', component: UserComponent,
+    // path: 'user',
+    path: '',
+    component: UserComponent,
     children: [
       { path: 'info', component: UserInfoComponent }
     ]
@@ -13,7 +15,7 @@ const appRoutes: Routes = [
 ]
 @NgModule({
   imports: [RouterModule.forChild(appRoutes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class UserRoutingModule {
 
