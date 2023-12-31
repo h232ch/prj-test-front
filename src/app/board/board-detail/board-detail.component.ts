@@ -1,8 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {Board} from "../board.model";
+import {Board} from "../board-models/board.model";
 import {BoardService} from "../board.service";
 import {Subscription} from "rxjs";
+import {AuthService} from "../../auth/auth.service";
+import {User} from "../../auth/user.model";
 
 @Component({
   selector: 'app-board-detail',
@@ -11,17 +13,23 @@ import {Subscription} from "rxjs";
 })
 export class BoardDetailComponent implements OnInit, OnDestroy {
   board: Board;
+  user: User;
   id: number;
   boardSub: Subscription;
+  userSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private boardService: BoardService,
+    private authService: AuthService,
     private router: Router,
   ) {
   }
 
   ngOnInit(): void {
+    this.userSub = this.authService.user.subscribe(res => {
+      this.user = res;
+    })
 
     this.boardSub = this.boardService.boardChanged.subscribe(res => {
         this.board = res;
@@ -45,10 +53,12 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
   }
 
   onDeleteBoard() {
+    this.id = +this.board.id;
     this.boardService.deleteBoard(this.id);
   }
 
   ngOnDestroy(): void {
     this.boardSub.unsubscribe();
+    this.userSub.unsubscribe();
   }
 }

@@ -5,7 +5,7 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {catchError, take, tap} from "rxjs/operators";
 import {AuthComponent} from "./auth.component";
-import {Board} from "../board/board.model";
+import {Board} from "../board/board-models/board.model";
 
 
 @Injectable()

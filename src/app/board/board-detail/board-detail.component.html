@@ -3,19 +3,19 @@
     <h2>{{ board.title }}</h2>
   </div>
 </div>
-<br>
+<hr>
 
-<br>
 <div class="row" *ngIf="board">
-  <div class="col-xs-12">
-    <p>User | {{ board.email }}</p>
-    <p>Time | {{ board.published | date: 'yyyy-MM-dd HH:mm:ss '}}</p>
+  <div class="col-sm-6 ">
+    <dl class="dl">
+      <dt>EMAIL 📨</dt>
+      <dd>{{ board.email }}</dd>
+      <br>
+      <dt>PUBLISHED 📆</dt>
+      <dd>{{ board.published | date: 'yyyy-MM-dd HH:mm:ss '}}</dd>
+    </dl>
   </div>
-</div>
-<br>
-
-<div class="row">
-  <div class="col-xs-12">
+  <div class="col-sm-6 text-right" *ngIf="user.email == board.email || user.email == 'admin@admin.com'">
     <div class="btn-group" appDropdown>
       <button
         type="button"
@@ -23,16 +23,15 @@
         Manage board <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
-        <li><a style="cursor: pointer;" (click)="onEditBoard()">Edit board</a></li>
-          <li><a style="cursor: pointer;" (click)="onDeleteBoard()">Delete board</a></li>
+        <li><a (click)="onEditBoard()">Edit board</a></li>
+        <li><a (click)="onDeleteBoard()">Delete board</a></li>
       </ul>
     </div>
   </div>
 </div>
-<hr>
 
-<div class="row" *ngIf="board">
+<div class="row" *ngIf="board" style="margin-top: 40px; margin-bottom: 40px">
   <div class="col-xs-12">
-    <p>{{ board.content }}</p>
+    <p class="custom-paragraph">{{ board.content }}</p>
   </div>
 </div>

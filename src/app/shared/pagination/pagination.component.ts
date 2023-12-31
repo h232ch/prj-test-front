@@ -29,11 +29,12 @@ export class PaginationComponent implements OnInit, OnDestroy {
       .subscribe(res => {
         this.startPage = res;
       });
+
     this.boardsPagSub = this.boardService.boardPagination
       .subscribe((res: any) => {
         this.totalItems = res['count'];
-      }
-    )
+      });
+
     this.boardsCurrentPageSub = this.boardService.currentPage
       .subscribe(res => {
       this.currentPage = res;
@@ -51,6 +52,10 @@ export class PaginationComponent implements OnInit, OnDestroy {
   }
 
   get pageNumbers(): number[] {
+    // console.log(this.totalItems)
+    // console.log(this.currentPage);
+    // console.log(this.startPage);
+    // console.log(this.pageSize);
     if (this.totalPages <= this.staticPageSize) {
       this.pageSize = this.totalPages;
 
@@ -71,6 +76,7 @@ export class PaginationComponent implements OnInit, OnDestroy {
   }
 
   next() {
+
     if ((this.startPage + (this.pageSize - 1)) == this.totalPages) {
       return
     }

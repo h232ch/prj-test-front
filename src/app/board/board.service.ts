@@ -1,11 +1,12 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {Observable, Subject, Subscription, throwError} from "rxjs";
-import {Board, BoardPagination} from "./board.model";
+import {Board, BoardPagination} from "./board-models/board.model";
 import {DataStorageService} from "../shared/data-storage.service";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {AuthService} from "../auth/auth.service";
 import {catchError} from "rxjs/operators";
+import {BoardSearch} from "./board-models/board-search.model";
 
 
 @Injectable()
@@ -34,10 +35,6 @@ export class BoardService extends DataStorageService<Board> {
     return this.httpClient.get<Board[]>(this.apiUrl);
   }
 
-  getPaginationPage(id: number): Observable<BoardPagination> {
-    return this.httpClient.get<BoardPagination>(`${this.apiUrl}?page=${id}`)
-  }
-
   getById(id: number): Observable<Board> {
     return this.httpClient.get<Board>(`${this.apiUrl}/${id}`);
   }
@@ -54,26 +51,52 @@ export class BoardService extends DataStorageService<Board> {
     return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getBoards(): Board[] {
-    this.getAll()
+  search(searchData: BoardSearch): Observable<BoardPagination> {
+    return this.httpClient.post<BoardPagination>(`${this.apiUrl}/search_data/`, searchData);
+  }
+
+  getPaginationSearchPage(id: number, searchData: BoardSearch): Observable<BoardPagination> {
+    return this.httpClient.post<BoardPagination>(`${this.apiUrl}/search_data/?page=${id}`, searchData)
+  }
+
+  getPaginationPage(id?: number): Observable<BoardPagination> {
+    if (id) {
+      return this.httpClient.get<BoardPagination>(`${this.apiUrl}?page=${id}`);
+    }
+    return this.httpClient.get<BoardPagination>(`${this.apiUrl}`);
+  }
+
+  getBoards() {
+    this.getPaginationPage()
       .pipe((catchError(this.errorHandler)))
-      .subscribe((res: Board[] | any) => {
-          if (res['results']) {
-            this.boardPagination.next(res);
-            this.boards = res['results'];
-          } else {
-            this.boards = res;
-          }
+      .subscribe((res: BoardPagination) => {
+          this.boardPagination.next(res);
+          this.boards = res['results'];
           this.boardsChanged.next(this.boards.slice());
         }, errorMessage => {
           console.log(errorMessage)
         }
       )
-    return this.boards;
   }
 
   getBoardsPagination(id: number) {
     return this.getPaginationPage(id).subscribe(res => {
+      this.boardPagination.next(res);
+      this.boards = res['results'];
+      this.boardsChanged.next(this.boards.slice());
+    })
+  }
+
+  searchBoards(event: BoardSearch) {
+    this.search(event).subscribe(res => {
+      this.boardPagination.next(res);
+      this.boards = res['results'];
+      this.boardsChanged.next(this.boards.slice());
+    })
+  }
+
+  getBoardsSearchPagination(id: number, searchData: BoardSearch) {
+    return this.getPaginationSearchPage(id, searchData).subscribe(res => {
       this.boardPagination.next(res);
       this.boards = res['results'];
       this.boardsChanged.next(this.boards.slice());
@@ -85,9 +108,7 @@ export class BoardService extends DataStorageService<Board> {
       this.getBoards();
       this.board = res;
       this.boardChanged.next(this.board);
-      this.currentPage.next(1);
-      this.startPage.next(1);
-      this.pageSize.next(4);
+      this.initPagination();
       this.router.navigate(['/boards/' + res.id]);
     })
   }
@@ -99,8 +120,8 @@ export class BoardService extends DataStorageService<Board> {
 
       this.boardChanged.next(res);
       this.currentPage.next(1);
-
       this.startPage.next(1);
+
       this.getBoards();
       this.router.navigate(['/boards/' + res.id])
     })
@@ -128,5 +149,11 @@ export class BoardService extends DataStorageService<Board> {
       return throwError(errorMessage.error);
     }
     return throwError(errorMessage);
+  }
+
+  initPagination() {
+    this.currentPage.next(1);
+    this.startPage.next(1);
+    this.pageSize.next(4);
   }
 }

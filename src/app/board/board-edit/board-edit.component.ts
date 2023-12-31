@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {BoardService} from "../board.service";
-import {Board} from "../board.model";
+import {Board} from "../board-models/board.model";
 import {Observable, Subject} from "rxjs";
 import {AuthService} from "../../auth/auth.service";
 import {User} from "../../auth/user.model";

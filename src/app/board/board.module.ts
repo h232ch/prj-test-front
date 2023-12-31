@@ -6,6 +6,7 @@ import {BoardDetailComponent} from "./board-detail/board-detail.component";
 import {SharedModule} from "../shared/shared.module";
 import {BoardRoutingModule} from "./board-routing/board-routing.module";
 import {RouterOutlet} from "@angular/router";
+import { BoardSearchComponent } from './board-search/board-search.component';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import {RouterOutlet} from "@angular/router";
     BoardEditComponent,
     BoardListComponent,
     BoardDetailComponent,
+    BoardSearchComponent,
   ],
   exports: [
   ],

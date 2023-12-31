@@ -1,8 +1,9 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Board} from "../board.model";
+import {Board} from "../board-models/board.model";
 import {BoardService} from "../board.service";
 import {Subscription} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
+import {BoardSearch} from "../board-models/board-search.model";
 
 @Component({
   selector: 'app-board-list',
@@ -11,8 +12,11 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class BoardListComponent implements OnInit, OnDestroy {
   boardsSub: Subscription;
-
   boards: Board[];
+  searchData: BoardSearch;
+  searchString: string;
+  searchSw = false;
+
 
   // Pagination
   currentPage: number = 1;
@@ -20,6 +24,7 @@ export class BoardListComponent implements OnInit, OnDestroy {
   totalItems: number;
   startPage: number = 1;
   pageSize: number = 4;
+  boardsLength: number;
 
   constructor(
     private boardService: BoardService,
@@ -33,21 +38,31 @@ export class BoardListComponent implements OnInit, OnDestroy {
       .subscribe(
       (boards: Board[]) => {
         this.boards = boards;
+        if (this.boards.length == 0) {
+          this.boardsLength = 0;
+        } else {
+          this.boardsLength = this.boards.length;
+        }
       }
     );
-
+    // for search data
+    this.boardService.boardPagination.subscribe(res => {
+      this.totalItems = res.count;
+    })
     // Resolver will retrieve a board data
     // this.boards = this.boardService.getBoards();
   }
-
-
 
   onNewBoard() {
     this.router.navigate(['new'], {relativeTo: this.route});
   }
 
   fetchData(): void {
-    this.boardService.getBoardsPagination(this.currentPage);
+    if (this.searchSw) {
+      this.boardService.getBoardsSearchPagination(this.currentPage, this.searchData);
+    } else {
+      this.boardService.getBoardsPagination(this.currentPage);
+    }
   }
 
   onPageChange(page: number): void {
@@ -55,8 +70,19 @@ export class BoardListComponent implements OnInit, OnDestroy {
     this.fetchData();
   }
 
+  onSearch($event: BoardSearch) {
+    this.searchData = $event;
+    this.boardService.searchBoards(this.searchData);
+    this.searchSw = true;
+  }
   ngOnDestroy(): void {
     this.boardsSub.unsubscribe();
   }
 
+  onInitSearch() {
+    this.boardService.initPagination();
+    this.searchSw = false;
+    this.searchString = '';
+    this.fetchData();
+  }
 }
