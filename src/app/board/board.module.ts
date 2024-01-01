@@ -7,6 +7,8 @@ import {SharedModule} from "../shared/shared.module";
 import {BoardRoutingModule} from "./board-routing/board-routing.module";
 import {RouterOutlet} from "@angular/router";
 import { BoardSearchComponent } from './board-search/board-search.component';
+import { BoardCommentComponent } from './board-comment/board-comment.component';
+import { BoardCommentEditComponent } from './board-comment/board-comment-edit/board-comment-edit.component';
 
 
 @NgModule({
@@ -16,6 +18,8 @@ import { BoardSearchComponent } from './board-search/board-search.component';
     BoardListComponent,
     BoardDetailComponent,
     BoardSearchComponent,
+    BoardCommentComponent,
+    BoardCommentEditComponent,
   ],
   exports: [
   ],

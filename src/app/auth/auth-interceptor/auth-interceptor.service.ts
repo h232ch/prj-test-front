@@ -33,15 +33,16 @@ export class AuthInterceptorService implements HttpInterceptor{
           headers: new HttpHeaders().set('Authorization', 'Bearer ' + user.access),
         })
 
-        return next.handle(modifiedReq).pipe(
-          catchError(error => {
-            if (error.status === 401) {
-              console.log('Unauthorized. Logging out...');
-              this.authService.logout();
-            }
-            return throwError('Token expired');
-          })
-        );
+        return next.handle(modifiedReq)
+        //   .pipe(
+        //   catchError(error => {
+        //     if (error.status === 401) {
+        //       console.log('Unauthorized. Logging out...');
+        //       this.authService.logout();
+        //     }
+        //     return throwError('Token expired');
+        //   })
+        // );
       })
     );
   }

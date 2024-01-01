@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-sm-12">
+        <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label for="comment">Comment</label>
+                        <textarea type="text"
+                                  class="form-control"
+                                  id="comment"
+                                  formControlName="comment"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 text-right">
+                    <button class="btn btn-default"
+                            type="submit">Submit
+                    </button>
+                    <button class="btn btn-default"
+                            type="button"
+                            (click)="onCancel()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

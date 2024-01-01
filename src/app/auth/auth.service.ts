@@ -11,11 +11,9 @@ import {Board} from "../board/board-models/board.model";
 @Injectable()
 export class AuthService {
   user = new BehaviorSubject(null);
-  error: Subject<any> = new Subject<any>();
+  error: Subject<string> = new Subject<string>();
   registerUrl = "http://localhost:8000/api/register/";
-  userUrl = "http://localhost:8000/api/users/"
   loginUrl = "http://localhost:8000/api/token/";
-
 
   constructor(
     private httpClient: HttpClient,
@@ -40,17 +38,11 @@ export class AuthService {
 
   join(user: User) {
     return this.httpClient.post<User>(this.registerUrl, user)
-      .pipe(catchError((errorRes: HttpErrorResponse) => {
-        let errorMessage = errorRes.error;
-        this.error.next(errorMessage.detail);
-
-        if (!errorRes.error) {
-          return throwError(errorMessage.error);
-        }
-        return throwError(errorMessage);
-      }))
+      .pipe(catchError(this.handlerError))
       .subscribe(res => {
         this.login(user);
+      }, errorMessage => {
+        this.error.next(errorMessage.detail);
       })
   }
 

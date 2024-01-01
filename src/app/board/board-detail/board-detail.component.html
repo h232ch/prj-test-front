@@ -1,37 +1,47 @@
 <div class="row" *ngIf="board">
-  <div class="col-sm-12">
-    <h2>{{ board.title }}</h2>
-  </div>
+    <div class="col-sm-12">
+        <h2>{{ board.title }}</h2>
+    </div>
 </div>
 <hr>
 
 <div class="row" *ngIf="board">
-  <div class="col-sm-6 ">
-    <dl class="dl">
-      <dt>EMAIL 📨</dt>
-      <dd>{{ board.email }}</dd>
-      <br>
-      <dt>PUBLISHED 📆</dt>
-      <dd>{{ board.published | date: 'yyyy-MM-dd HH:mm:ss '}}</dd>
-    </dl>
-  </div>
-  <div class="col-sm-6 text-right" *ngIf="user.email == board.email || user.email == 'admin@admin.com'">
-    <div class="btn-group" appDropdown>
-      <button
-        type="button"
-        class="btn btn-default dropdown-toggle">
-        Manage board <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a (click)="onEditBoard()">Edit board</a></li>
-        <li><a (click)="onDeleteBoard()">Delete board</a></li>
-      </ul>
+    <div class="col-sm-4" style="margin-bottom: 20px">
+        <dl class="dl">
+            <dt>Email 📨</dt>
+            <dd>{{ board.email }}</dd>
+        </dl>
     </div>
-  </div>
+    <div class="col-sm-4" style="margin-bottom: 20px">
+        <dl class="dl">
+            <dt>Date 📆</dt>
+            <dd>{{ board.published | date: 'yyyy-MM-dd HH:mm:ss'}}</dd>
+        </dl>
+    </div>
+    <div class="col-sm-4 text-right"
+         *ngIf="user.email == board.email || user.email == 'admin@admin.com'">
+        <div class="btn-group" appDropdown>
+            <button
+                    type="button"
+                    class="btn btn-default dropdown-toggle">
+                Manage <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a (click)="onEditBoard()">Edit board</a></li>
+                <li><a (click)="onDeleteBoard()">Delete board</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-sm-12" style="margin-top: 30px; margin-bottom: 140px">
+        <p class="custom-paragraph">{{ board.content }}</p>
+    </div>
+    <div class="col-sm-12">
+        <app-board-comment
+                [comments]="board.comments">
+        </app-board-comment>
+    </div>
+    <!--    <p class="custom-paragraph" *ngFor="let comment of board.comments">-->
+    <!--      {{ comment.comment }}-->
+    <!--    </p>-->
 </div>
 
-<div class="row" *ngIf="board" style="margin-top: 40px; margin-bottom: 40px">
-  <div class="col-xs-12">
-    <p class="custom-paragraph">{{ board.content }}</p>
-  </div>
-</div>

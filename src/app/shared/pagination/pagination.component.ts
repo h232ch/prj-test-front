@@ -8,12 +8,15 @@ import {Subscription} from "rxjs";
   styleUrls: ['./pagination.component.css']
 })
 export class PaginationComponent implements OnInit, OnDestroy {
+  // Pagination variables
   @Input() currentPage: number;
   @Input() itemsPerPage: number;
   @Input() totalItems: number;
   @Output() pageChanged: EventEmitter<number> = new EventEmitter();
   @Input() pageSize: number;
   @Input() startPage: number;
+
+  // Pagination static variables
   private staticPageSize = 4;
 
   // Subscription values
@@ -22,8 +25,6 @@ export class PaginationComponent implements OnInit, OnDestroy {
   private boardsCurrentPageSub: Subscription;
 
   constructor(private boardService: BoardService,) {}
-
-
   ngOnInit(): void {
     this.startPageSub = this.boardService.startPage
       .subscribe(res => {
@@ -52,10 +53,6 @@ export class PaginationComponent implements OnInit, OnDestroy {
   }
 
   get pageNumbers(): number[] {
-    // console.log(this.totalItems)
-    // console.log(this.currentPage);
-    // console.log(this.startPage);
-    // console.log(this.pageSize);
     if (this.totalPages <= this.staticPageSize) {
       this.pageSize = this.totalPages;
 
@@ -76,7 +73,6 @@ export class PaginationComponent implements OnInit, OnDestroy {
   }
 
   next() {
-
     if ((this.startPage + (this.pageSize - 1)) == this.totalPages) {
       return
     }

@@ -1,0 +1,63 @@
+<div class="row" style="margin-bottom: 20px" *ngIf="!editSw">
+    <div class="col-sm-12 text-right">
+        <button class="btn btn-default" (click)="onEditComment()">
+            <span class="glyphicon glyphicon-flash"></span>
+            New comment
+        </button>
+    </div>
+</div>
+
+<div class="row" *ngIf="comments.length">
+    <div class="col-sm-12">
+        <h4>Comments</h4>
+    </div>
+</div>
+
+<div class="row" *ngIf="editSw">
+    <div class="col-sm-12" style="margin-bottom: 20px">
+        <app-board-comment-edit
+                [commentId]="commentId"
+                (commentIdOutput)="onCommentIdChange()"
+                [editMode]="editSw"
+                (editModeOutput)="onEditModeChange($event)"
+
+        >
+        </app-board-comment-edit>
+    </div>
+</div>
+<hr>
+
+<ng-container *ngIf="!editSw">
+    <div class="row" *ngFor="let comment of comments">
+        <div class="col-sm-4" style="margin-bottom: 20px">
+            <dl class="dl">
+                <dt>Email 📨</dt>
+                <dd>{{ comment.email }}</dd>
+            </dl>
+        </div>
+        <div class="col-sm-4" style="margin-bottom: 20px">
+            <dl class="dl">
+                <dt>Date 📆</dt>
+                <dd>{{ comment.published | date: 'yyyy-MM-dd HH:mm:ss'}}</dd>
+            </dl>
+        </div>
+        <div class="col-sm-4 text-right" style="margin-bottom: 20px"
+             *ngIf="user.email == comment.email || user.email == 'admin@admin.com'">
+            <div class="btn-group" appDropdown>
+                <button type="button"
+                        class="btn btn-default dropdown-toggle">
+                    Manage <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a (click)="onEditComment(+comment.id)">Edit comment</a></li>
+                    <li><a (click)="onDeleteComment(+comment.id, boardId)">Delete comment</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <p> {{ comment.comment }} </p>
+            <hr>
+        </div>
+    </div>
+</ng-container>
+

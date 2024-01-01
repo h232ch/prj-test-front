@@ -1,159 +1,195 @@
-import {Injectable, OnDestroy} from '@angular/core';
-import {Observable, Subject, Subscription, throwError} from "rxjs";
-import {Board, BoardPagination} from "./board-models/board.model";
+import {Injectable,} from '@angular/core';
+import {Observable, Subject, throwError} from "rxjs";
+import {BoardPaginationTemp, BoardTemp, Comment} from "./board-models/board.model";
 import {DataStorageService} from "../shared/data-storage.service";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
-import {AuthService} from "../auth/auth.service";
 import {catchError} from "rxjs/operators";
 import {BoardSearch} from "./board-models/board-search.model";
 
 
 @Injectable()
-export class BoardService extends DataStorageService<Board> {
-
-  boardsChanged: Subject<Board[] | BoardPagination['results'][]> = new Subject<Board[] | BoardPagination['results'][]>();
-  boardChanged: Subject<Board> = new Subject<Board>();
-  boardPagination: Subject<BoardPagination> = new Subject<BoardPagination>();
-
-  currentPage: Subject<number> = new Subject<number>();
-  startPage: Subject<number> = new Subject<number>();
-  pageSize: Subject<number> = new Subject<number>();
-
-  private boards: Board[] | BoardPagination['results'][] | any;
-  private board: Board;
+export class BoardService extends DataStorageService<BoardTemp> {
+    boardsChanged: Subject<BoardTemp[]> = new Subject<BoardTemp[]>();
+    boardChanged: Subject<BoardTemp> = new Subject<BoardTemp>();
+    boardPagination: Subject<BoardPaginationTemp> = new Subject<BoardPaginationTemp>();
+    error = new Subject<{}>();
 
 
-  constructor(
-    private httpClient: HttpClient,
-    private router: Router,
-  ) {
-    super(httpClient, 'http://localhost:8000/api/boards');
-  }
+    // Pagination variables
+    currentPage: Subject<number> = new Subject<number>();
+    startPage: Subject<number> = new Subject<number>();
+    pageSize: Subject<number> = new Subject<number>();
 
-  getAll(): Observable<Board[]> {
-    return this.httpClient.get<Board[]>(this.apiUrl);
-  }
+    private boards: BoardTemp[];
+    private board: BoardTemp;
 
-  getById(id: number): Observable<Board> {
-    return this.httpClient.get<Board>(`${this.apiUrl}/${id}`);
-  }
-
-  create(board: Board): Observable<Board> {
-    return this.httpClient.post<Board>(`${this.apiUrl}/`, board);
-  }
-
-  update(id: number, board: Board): Observable<Board> {
-    return this.httpClient.put<Board>(`${this.apiUrl}/${id}/`, board);
-  }
-
-  delete(id: number): Observable<void> {
-    return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  search(searchData: BoardSearch): Observable<BoardPagination> {
-    return this.httpClient.post<BoardPagination>(`${this.apiUrl}/search_data/`, searchData);
-  }
-
-  getPaginationSearchPage(id: number, searchData: BoardSearch): Observable<BoardPagination> {
-    return this.httpClient.post<BoardPagination>(`${this.apiUrl}/search_data/?page=${id}`, searchData)
-  }
-
-  getPaginationPage(id?: number): Observable<BoardPagination> {
-    if (id) {
-      return this.httpClient.get<BoardPagination>(`${this.apiUrl}?page=${id}`);
+    constructor(
+        private httpClient: HttpClient,
+        private router: Router,
+    ) {
+        super(httpClient, 'http://localhost:8000/api');
     }
-    return this.httpClient.get<BoardPagination>(`${this.apiUrl}`);
-  }
 
-  getBoards() {
-    this.getPaginationPage()
-      .pipe((catchError(this.errorHandler)))
-      .subscribe((res: BoardPagination) => {
-          this.boardPagination.next(res);
-          this.boards = res['results'];
-          this.boardsChanged.next(this.boards.slice());
-        }, errorMessage => {
-          console.log(errorMessage)
+    getAll(): Observable<BoardTemp[]> {
+        return this.httpClient.get<BoardTemp[]>(`${this.apiUrl}/boards`);
+    }
+
+    getById(id: number): Observable<BoardTemp> {
+        return this.httpClient.get<BoardTemp>(`${this.apiUrl}/boards/${id}`);
+    }
+
+    create(board: BoardTemp): Observable<BoardTemp> {
+        return this.httpClient.post<BoardTemp>(`${this.apiUrl}/boards/`, board);
+    }
+
+    update(id: number, board: BoardTemp): Observable<BoardTemp> {
+        return this.httpClient.put<BoardTemp>(`${this.apiUrl}/boards/${id}/`, board);
+    }
+
+    delete(id: number): Observable<void> {
+        return this.httpClient.delete<void>(`${this.apiUrl}/boards/${id}`);
+    }
+
+    getPaginationAll(id?: number): Observable<BoardPaginationTemp> {
+        if (id) {
+            return this.httpClient.get<BoardPaginationTemp>(`${this.apiUrl}/boards?page=${id}`);
         }
-      )
-  }
-
-  getBoardsPagination(id: number) {
-    return this.getPaginationPage(id).subscribe(res => {
-      this.boardPagination.next(res);
-      this.boards = res['results'];
-      this.boardsChanged.next(this.boards.slice());
-    })
-  }
-
-  searchBoards(event: BoardSearch) {
-    this.search(event).subscribe(res => {
-      this.boardPagination.next(res);
-      this.boards = res['results'];
-      this.boardsChanged.next(this.boards.slice());
-    })
-  }
-
-  getBoardsSearchPagination(id: number, searchData: BoardSearch) {
-    return this.getPaginationSearchPage(id, searchData).subscribe(res => {
-      this.boardPagination.next(res);
-      this.boards = res['results'];
-      this.boardsChanged.next(this.boards.slice());
-    })
-  }
-
-  updateBoard(id: number, board: Board, page: number) {
-    this.update(id, board).subscribe(res => {
-      this.getBoards();
-      this.board = res;
-      this.boardChanged.next(this.board);
-      this.initPagination();
-      this.router.navigate(['/boards/' + res.id]);
-    })
-  }
-
-  createBoard(board: Board) {
-    this.create(board).subscribe(res => {
-      this.getBoards();
-      this.board = res;
-
-      this.boardChanged.next(res);
-      this.currentPage.next(1);
-      this.startPage.next(1);
-
-      this.getBoards();
-      this.router.navigate(['/boards/' + res.id])
-    })
-  }
-
-  getBoard(id: number) {
-    this.getById(id).subscribe(res => {
-      this.board = res;
-      this.boardChanged.next(this.board);
-    })
-  }
-
-  deleteBoard(id: number) {
-    this.delete(id).subscribe(res => {
-      this.getBoards();
-
-      this.startPage.next(1);
-      this.router.navigate(['/boards']);
-    })
-  }
-
-  errorHandler(errorRes: HttpErrorResponse) {
-    let errorMessage = errorRes.error;
-    if (!errorRes.error) {
-      return throwError(errorMessage.error);
+        return this.httpClient.get<BoardPaginationTemp>(`${this.apiUrl}/boards`);
     }
-    return throwError(errorMessage);
-  }
 
-  initPagination() {
-    this.currentPage.next(1);
-    this.startPage.next(1);
-    this.pageSize.next(4);
-  }
+    search(searchData: BoardSearch): Observable<BoardPaginationTemp> {
+        if (searchData.id) {
+            return this.httpClient.post<BoardPaginationTemp>
+            (`${this.apiUrl}/boards/search_data/?page=${searchData.id}`, searchData)
+        } else {
+            return this.httpClient.post<BoardPaginationTemp>
+            (`${this.apiUrl}/boards/search_data/`, searchData);
+        }
+    }
+
+    _getByCommentId(id: number): Observable<Comment> {
+        return this.httpClient.get<Comment>(`${this.apiUrl}/comments/${id}`)
+    }
+
+    _updateComment(id: number, comment: Comment) {
+        return this.httpClient.post<Comment>(`${this.apiUrl}/comments/${id}`, comment)
+    }
+
+    _createComment(comment: Comment) {
+        return this.httpClient.post<Comment>(`${this.apiUrl}/comments/`, comment)
+    }
+
+    _deleteComment(id: number) {
+        return this.httpClient.delete(`${this.apiUrl}/comments/${id}`);
+    }
+
+
+    //
+
+    getBoards(id?: number) {
+        let boardsObs: Observable<BoardPaginationTemp>;
+        if (id) {
+            boardsObs = this.getPaginationAll(id);
+        } else {
+            boardsObs = this.getPaginationAll();
+        }
+        boardsObs
+            .pipe((catchError(this.handlerError)))
+            .subscribe((res: BoardPaginationTemp) => {
+                    this.boardPagination.next(res);
+                    this.boards = res.results as unknown as BoardTemp[]; // Cast to Board[]
+                    this.boardsChanged.next(this.boards.slice());
+                }
+            );
+    }
+
+    getSearchBoards(event: BoardSearch) {
+        this.search(event).subscribe(res => {
+            this.boardPagination.next(res);
+            this.boards = res.results as unknown as BoardTemp[];
+            this.boardsChanged.next(this.boards.slice());
+        });
+    }
+
+    updateBoard(id: number, board: BoardTemp, page: number) {
+        this.update(id, board)
+            .subscribe(res => {
+                    this.getBoards();
+                    this.board = res;
+                    this.boardChanged.next(this.board);
+                    this.initPagination();
+                    this.router.navigate(['/boards/' + res.id]);
+                }, errorMessage => {
+                    this.error.next(errorMessage.error.title);
+                }
+            )
+    }
+
+    createBoard(board: BoardTemp) {
+        this.create(board)
+            .subscribe(res => {
+                    this.getBoards();
+                    this.board = res;
+
+                    this.boardChanged.next(res);
+                    this.currentPage.next(1);
+                    this.startPage.next(1);
+
+                    this.getBoards();
+                    this.router.navigate(['/boards/' + res.id])
+                }, errorMessage => {
+                    this.error.next(errorMessage.error);
+                }
+            )
+    }
+
+    getBoard(id: number) {
+        this.getById(id).subscribe(res => {
+            this.board = res;
+            this.boardChanged.next(this.board);
+        })
+    }
+
+    deleteBoard(id: number) {
+        this.delete(id).subscribe(res => {
+            this.getBoards();
+
+            this.startPage.next(1);
+            this.router.navigate(['/boards']);
+        })
+    }
+
+    updateComment(boardId: number, commentId: number, comment: Comment) {
+        this._updateComment(commentId, comment).subscribe(res => {
+            this.getBoard(boardId);
+        })
+    }
+
+    createComment(boardId: number, comment: Comment) {
+        this._createComment(comment).subscribe(res => {
+            this.getBoard(boardId);
+        })
+    }
+
+    deleteComment(commentId: number, boardId: number) {
+        this._deleteComment(commentId).subscribe(res => {
+            this.getBoard(boardId);
+        })
+    }
+
+    initPagination() {
+        this.currentPage.next(1);
+        this.startPage.next(1);
+        this.pageSize.next(4);
+    }
+
+    handlerError(errorRes: HttpErrorResponse) {
+        let errorMessage = errorRes.error
+        if (!errorRes) {
+            return throwError(errorMessage);
+        }
+        return throwError(errorMessage);
+    }
+
 }

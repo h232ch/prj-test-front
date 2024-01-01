@@ -55,9 +55,7 @@ export class AuthTokenValidationInterceptorService implements HttpInterceptor {
     // You may use a library like jwt-decode or implement your own logic
     // Example using jwt-decode:
     const decodedToken = jwtDecode(token);
-    console.log(decodedToken);
     const currentTime = Date.now() / 1000;
-    console.log(currentTime);
     return decodedToken.exp < currentTime;
     // return false; // Placeholder, implement your own logic
   }

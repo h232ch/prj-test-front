@@ -13,6 +13,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
   loginMode = true;
   isLoading = false;
+
   error: string;
   private errorSub: Subscription;
   private authSub: Subscription;
@@ -24,7 +25,8 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.errorSub = this.authService.error.subscribe(res => {
+    this.errorSub = this.authService.error
+      .subscribe(res => {
       this.error = res;
     })
     this.initForm();
