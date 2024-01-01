@@ -1,13 +1,13 @@
 <div class="row" style="margin-bottom: 20px" *ngIf="!editSw">
     <div class="col-sm-12 text-right">
-        <button class="btn btn-default" (click)="onEditComment()">
+        <button class="btn btn-block" (click)="onEditComment()">
             <span class="glyphicon glyphicon-flash"></span>
             New comment
         </button>
     </div>
 </div>
 
-<div class="row" *ngIf="comments.length">
+<div class="row" *ngIf="comments.length || editSw == true">
     <div class="col-sm-12">
         <h4>Comments</h4>
     </div>
@@ -29,19 +29,19 @@
 
 <ng-container *ngIf="!editSw">
     <div class="row" *ngFor="let comment of comments">
-        <div class="col-sm-4" style="margin-bottom: 20px">
+        <div class="col-sm-4" style="margin-bottom: 10px">
             <dl class="dl">
                 <dt>Email 📨</dt>
                 <dd>{{ comment.email }}</dd>
             </dl>
         </div>
-        <div class="col-sm-4" style="margin-bottom: 20px">
+        <div class="col-sm-4" style="margin-bottom: 10px">
             <dl class="dl">
                 <dt>Date 📆</dt>
                 <dd>{{ comment.published | date: 'yyyy-MM-dd HH:mm:ss'}}</dd>
             </dl>
         </div>
-        <div class="col-sm-4 text-right" style="margin-bottom: 20px"
+        <div class="col-sm-4 text-right" style="margin-bottom: 10px"
              *ngIf="user.email == comment.email || user.email == 'admin@admin.com'">
             <div class="btn-group" appDropdown>
                 <button type="button"

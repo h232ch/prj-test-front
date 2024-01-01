@@ -73,7 +73,7 @@ export class BoardService extends DataStorageService<BoardTemp> {
     }
 
     _updateComment(id: number, comment: Comment) {
-        return this.httpClient.post<Comment>(`${this.apiUrl}/comments/${id}`, comment)
+        return this.httpClient.put<Comment>(`${this.apiUrl}/comments/${id}/`, comment)
     }
 
     _createComment(comment: Comment) {
