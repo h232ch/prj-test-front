@@ -17,7 +17,7 @@ export class PaginationComponent implements OnInit, OnDestroy {
   @Input() startPage: number;
 
   // Pagination static variables
-  private staticPageSize = 5;
+  private staticPageSize = 6;
 
   // Subscription values
   private startPageSub: Subscription;

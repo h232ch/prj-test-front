@@ -24,10 +24,10 @@ export class BoardListComponent implements OnInit, OnDestroy {
 
     // Pagination
     currentPage: number = 1;
-    itemsPerPage: number = 5;
+    itemsPerPage: number = 6;
     totalItems: number;
     startPage: number = 1;
-    pageSize: number = 5;
+    pageSize: number = 6;
     boardsLength: number;
 
     constructor(
