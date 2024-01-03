@@ -1,4 +1,4 @@
-<div class="row" style="margin-bottom: 20px" *ngIf="!editSw">
+<div class="row" style="margin-bottom: 20px" *ngIf="!commentEditMode">
     <div class="col-sm-12 text-right">
         <button class="btn btn-block" (click)="onEditComment()">
             <span class="glyphicon glyphicon-flash"></span>
@@ -7,27 +7,31 @@
     </div>
 </div>
 
-<div class="row" *ngIf="comments.length || editSw == true">
+<div class="row" *ngIf="comments.length || commentEditMode == true">
     <div class="col-sm-12">
         <h4>Comments</h4>
     </div>
 </div>
 
-<div class="row" *ngIf="editSw">
+<div class="row" *ngIf="commentEditMode">
     <div class="col-sm-12" style="margin-bottom: 20px">
         <app-board-comment-edit
                 [commentId]="commentId"
-                (commentIdOutput)="onCommentIdChange()"
-                [editMode]="editSw"
-                (editModeOutput)="onEditModeChange($event)"
+                [commentEditMode]="commentEditMode"
 
+                (onCommentIdChange)="onCommentIdChange()"
+                (onEditModeChange)="onEditModeChange($event)"
+                (onParentCommentIdChange)="onParentCommentIdChange($event)"
+
+                [childCommentMode]="childCommentMode"
+                [parentCommentId]="parentCommentId"
         >
         </app-board-comment-edit>
     </div>
 </div>
 <hr>
 
-<ng-container *ngIf="!editSw">
+<ng-container *ngIf="!commentEditMode">
     <div class="row" *ngFor="let comment of comments">
         <div class="col-sm-4" style="margin-bottom: 10px">
             <dl class="dl">
@@ -51,12 +55,22 @@
                 <ul class="dropdown-menu">
                     <li><a (click)="onEditComment(+comment.id)">Edit comment</a></li>
                     <li><a (click)="onDeleteComment(+comment.id, boardId)">Delete comment</a></li>
+                    <li><a (click)="onNewChildComment(+comment.id)">New comment</a></li>
                 </ul>
             </div>
         </div>
         <div class="col-sm-12">
             <p> {{ comment.comment }} </p>
             <hr>
+        </div>
+        <div class="col-sm-12">
+            <app-board-child-comment
+                    [user]="user"
+                    [child_comments]="comment.child_comments"
+
+                    (onEditChildComment)="onEditChildComment($event)"
+                    (onDeleteChildComment)="onDeleteChildComment($event, boardId)"
+            ></app-board-child-comment>
         </div>
     </div>
 </ng-container>

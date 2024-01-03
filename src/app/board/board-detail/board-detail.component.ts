@@ -1,58 +1,76 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {BoardTemp} from "../board-models/board.model";
-import {BoardService} from "../board.service";
-import {Subscription} from "rxjs";
+import {Board} from "../board-models/board.model";
+import {Subject, Subscription} from "rxjs";
 import {AuthService} from "../../auth/auth.service";
 import {User} from "../../auth/user.model";
+import {takeUntil} from "rxjs/operators";
+import {BoardApiService} from "../board-api-service";
 
 @Component({
-  selector: 'app-board-detail',
-  templateUrl: './board-detail.component.html',
-  styleUrls: ['./board-detail.component.css']
+    selector: 'app-board-detail',
+    templateUrl: './board-detail.component.html',
+    styleUrls: ['./board-detail.component.css']
 })
 export class BoardDetailComponent implements OnInit, OnDestroy {
-  board: BoardTemp;
-  user: User;
-  id: number;
-  boardSub: Subscription;
-  userSub: Subscription;
+    board: Board;
+    user: User;
+    id: number;
+    boardSub: Subscription;
+    userSub: Subscription;
 
-  constructor(
-    private route: ActivatedRoute,
-    private boardService: BoardService,
-    private authService: AuthService,
-    private router: Router,
-  ) {
-  }
+    // error control
+    error: string;
+    private destroySub = new Subject<void>();
 
-  ngOnInit(): void {
-    this.userSub = this.authService.user.subscribe(res => {
-      this.user = res;
-    })
+    constructor(
+        private route: ActivatedRoute,
+        private boardApiService: BoardApiService,
+        private authService: AuthService,
+        private router: Router,
+    ) {
+    }
 
-    this.boardSub = this.boardService.boardChanged.subscribe(res => {
-        this.board = res;
-      }
-    )
+    ngOnInit(): void {
+        this.boardApiService.error
+            .pipe(takeUntil(this.destroySub))
+            .subscribe(res => {
+                this.error = this.boardApiService.formatError(res);
+            });
 
-    // resolver will retrieve the detail of board
-  }
+        this.userSub = this.authService.user.subscribe(res => {
+            this.user = res;
+        })
 
-  onEditBoard() {
-    this.router.navigate(['edit'],
-      {
-        relativeTo: this.route,
-      });
-  }
+        this.boardSub = this.boardApiService.boardChanged.subscribe(res => {
+            this.board = res;
+        })
 
-  onDeleteBoard() {
-    this.id = +this.board.id;
-    this.boardService.deleteBoard(this.id);
-  }
+        // resolver will retrieve the detail of board
+    }
 
-  ngOnDestroy(): void {
-    this.boardSub.unsubscribe();
-    this.userSub.unsubscribe();
-  }
+    onEditBoard() {
+        this.router.navigate(['edit'],
+            {
+                relativeTo: this.route,
+            });
+    }
+
+    onDeleteBoard() {
+        this.id = +this.board.id;
+        // console.log('ondelete test')
+        this.boardApiService.delete(this.id);
+    }
+
+    ngOnDestroy(): void {
+        this.boardSub.unsubscribe();
+        this.userSub.unsubscribe();
+
+        this.destroySub.next();
+        this.destroySub.complete();
+    }
+
+    onHandleError() {
+        this.error = undefined;
+    }
 }

@@ -9,7 +9,7 @@ import {RouterOutlet} from "@angular/router";
 import { BoardSearchComponent } from './board-search/board-search.component';
 import { BoardCommentComponent } from './board-comment/board-comment.component';
 import { BoardCommentEditComponent } from './board-comment/board-comment-edit/board-comment-edit.component';
-
+import { BoardChildCommentComponent } from './board-comment/board-child-comment/board-child-comment.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +20,7 @@ import { BoardCommentEditComponent } from './board-comment/board-comment-edit/bo
     BoardSearchComponent,
     BoardCommentComponent,
     BoardCommentEditComponent,
+    BoardChildCommentComponent,
   ],
   exports: [
   ],

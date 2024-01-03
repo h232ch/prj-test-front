@@ -22,7 +22,7 @@ import {HeaderModule} from "./header/header.module";
     HeaderModule,
     SharedModule,
     AuthModule,
-    // It's really important to apply lazy-loading, skip the board, user module for this
+    // for lazy-loading, skip the board, user module for this
     // BoardModule,
     // UserModule,
     CoreModule,

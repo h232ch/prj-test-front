@@ -1,3 +1,9 @@
+<app-alert [message]="error"
+           *ngIf="error"
+           (close)="onHandleError()">
+</app-alert>
+
+
 <div class="row" *ngIf="board">
     <div class="col-sm-12">
         <h2>{{ board.title }}</h2>

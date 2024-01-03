@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "./auth/auth.service";
-import {BoardService} from "./board/board.service";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -17,5 +15,4 @@ export class AppComponent implements OnInit{
   ngOnInit(): void {
     this.authService.autoLogin();
   }
-
 }

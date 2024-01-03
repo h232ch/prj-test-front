@@ -10,83 +10,83 @@ import {Board} from "../board/board-models/board.model";
 
 @Injectable()
 export class AuthService {
-  user = new BehaviorSubject(null);
-  error: Subject<string> = new Subject<string>();
-  registerUrl = "http://localhost:8000/api/register/";
-  loginUrl = "http://localhost:8000/api/token/";
+    user = new BehaviorSubject(null);
+    error: Subject<string> = new Subject<string>();
+    registerUrl = "http://localhost:8000/api/register/";
+    loginUrl = "http://localhost:8000/api/token/";
 
-  constructor(
-    private httpClient: HttpClient,
-    private router: Router,
-  ) {
-  }
+    constructor(
+        private httpClient: HttpClient,
+        private router: Router,
+    ) {
+    }
 
-  login(user: User) {
-    return this.httpClient.post<User>(this.loginUrl, user)
-      .pipe(catchError(this.handlerError))
-      .subscribe(res => {
-          this.handleAuthentication(
-            res.email,
-            res.id,
-            res.access,
-            res.refresh);
-        }, errorMessage => {
-          this.error.next(errorMessage.detail);
+    login(user: User) {
+        return this.httpClient.post<User>(this.loginUrl, user)
+            .pipe(catchError(this.handlerError))
+            .subscribe(res => {
+                    this.handleAuthentication(
+                        res.email,
+                        res.id,
+                        res.access,
+                        res.refresh);
+                }, errorMessage => {
+                    this.error.next(errorMessage.detail);
+                }
+            )
+    }
+
+    join(user: User) {
+        return this.httpClient.post<User>(this.registerUrl, user)
+            .pipe(catchError(this.handlerError))
+            .subscribe(res => {
+                this.login(user);
+            }, errorMessage => {
+                this.error.next(errorMessage.detail);
+            })
+    }
+
+    logout() {
+        this.user.next(null);
+        localStorage.removeItem('userData');
+        this.router.navigate(['/']);
+    }
+
+    private handlerError(errorRes: HttpErrorResponse) {
+        let errorMessage = errorRes.error;
+        if (!errorRes.error) {
+            return throwError(errorMessage);
         }
-      )
-  }
-
-  join(user: User) {
-    return this.httpClient.post<User>(this.registerUrl, user)
-      .pipe(catchError(this.handlerError))
-      .subscribe(res => {
-        this.login(user);
-      }, errorMessage => {
-        this.error.next(errorMessage.detail);
-      })
-  }
-
-  logout() {
-    this.user.next(null);
-    localStorage.removeItem('userData');
-    this.router.navigate(['/']);
-  }
-
-  private handlerError(errorRes: HttpErrorResponse) {
-    let errorMessage = errorRes.error;
-    if (!errorRes.error) {
-      return throwError(errorMessage);
-    }
-    return throwError(errorMessage);
-  }
-
-  private handleAuthentication(email: string, id: string, access: string, refresh: string) {
-    const user = {
-      id: id,
-      email: email,
-      access: access,
-      refresh: refresh,
-    }
-    this.user.next(user);
-    localStorage.setItem('userData', JSON.stringify(user));
-    this.router.navigate(['/']);
-  }
-
-  autoLogin() {
-    const userData: User = JSON.parse(localStorage.getItem('userData'))
-    if (!userData) {
-      return;
+        return throwError(errorMessage);
     }
 
-    const loadedUser: User = {
-      id: userData.id,
-      email: userData.email,
-      access: userData.access,
-      refresh: userData.refresh,
+    private handleAuthentication(email: string, id: string, access: string, refresh: string) {
+        const user = {
+            id: id,
+            email: email,
+            access: access,
+            refresh: refresh,
+        }
+        this.user.next(user);
+        localStorage.setItem('userData', JSON.stringify(user));
+        this.router.navigate(['/']);
     }
 
-    if (loadedUser.access) {
-      this.user.next(loadedUser);
+    autoLogin() {
+        const userData: User = JSON.parse(localStorage.getItem('userData'))
+        if (!userData) {
+            return;
+        }
+
+        const loadedUser: User = {
+            id: userData.id,
+            email: userData.email,
+            access: userData.access,
+            refresh: userData.refresh,
+        }
+
+        if (loadedUser.access) {
+            this.user.next(loadedUser);
+        }
     }
-  }
 }

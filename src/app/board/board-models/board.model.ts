@@ -1,19 +1,6 @@
-export interface Board {
-    id: string;
-    user: string;
-    email: string;
-    title: string;
-    content: string;
-    published: Date;
-    // comment: {
-    //   id: string;
-    //   board: string;
-    //   comment: string;
-    //   published: Date;
-    // }
-}
+import {Input} from "@angular/core";
 
-export interface BoardTemp {
+export interface Board {
     id: string;
     user: string;
     email: string;
@@ -26,6 +13,14 @@ export interface BoardTemp {
         email: string;
         comment: string;
         published: Date;
+        child_comments: {
+            id: string,
+            user: string,
+            email: string,
+            comment: string,
+            published: Date
+            p_comment: string;
+        }[]
     }]
 }
 
@@ -40,33 +35,21 @@ export interface BoardPagination {
         title: string;
         content: string;
         published: Date;
-        // comment: {
-        //   id: string;
-        //   board: string;
-        //   comment: string;
-        //   published: Date;
-        // }
-    }
-}
-
-export interface BoardPaginationTemp {
-    count: number;
-    next: string;
-    previous: string;
-    results: {
-        id: string;
-        user: string;
-        email: string;
-        title: string;
-        content: string;
-        published: Date;
-        comments: [{
+        comments: {
             id: string;
             email: string;
             board: string;
             comment: string;
             published: Date;
-        }]
+            child_comments: {
+                id: string,
+                user: string,
+                email: string,
+                comment: string,
+                published: Date
+                p_comment: string;
+            }[]
+        }[]
     }
 }
 
@@ -75,5 +58,22 @@ export interface Comment {
     email: string;
     board: number;
     comment: string;
+    p_comment?: number;
+    child_comments: {
+        id: string,
+        user: string,
+        email: string,
+        comment: string,
+        published: Date
+        p_comment: string;
+    }[]
+    published: Date;
+}
+
+export interface ChildComment {
+    id: number;
+    email: string;
+    comment: number;
+    child_comment: string;
     published: Date;
 }

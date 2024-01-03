@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
-import {BoardService} from "../../board/board.service";
 import {Subscription} from "rxjs";
+import {BoardApiService} from "../../board/board-api-service";
 
 @Component({
   selector: 'app-pagination',
@@ -17,30 +17,32 @@ export class PaginationComponent implements OnInit, OnDestroy {
   @Input() startPage: number;
 
   // Pagination static variables
-  private staticPageSize = 6;
+  private staticPageSize = 4;
 
   // Subscription values
   private startPageSub: Subscription;
   private boardsPagSub: Subscription;
   private boardsCurrentPageSub: Subscription;
 
-  constructor(private boardService: BoardService,) {}
+  constructor(
+              private boardApiService: BoardApiService) {}
   ngOnInit(): void {
-    this.startPageSub = this.boardService.startPage
+    this.startPageSub = this.boardApiService.startPage
       .subscribe(res => {
         this.startPage = res;
       });
 
-    this.boardsPagSub = this.boardService.boardPagination
+    this.boardsPagSub = this.boardApiService.boardPagination
       .subscribe((res: any) => {
         this.totalItems = res['count'];
       });
 
-    this.boardsCurrentPageSub = this.boardService.currentPage
+    this.boardsCurrentPageSub = this.boardApiService.currentPage
       .subscribe(res => {
       this.currentPage = res;
     });
   }
+
 
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.itemsPerPage);

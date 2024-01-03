@@ -1,10 +1,10 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {BoardTemp} from "../board-models/board.model";
-import {BoardService} from "../board.service";
+import {Component, Input, OnDestroy, OnInit, } from '@angular/core';
+import {Board, Comment} from "../board-models/board.model";
 import {ActivatedRoute, Params} from "@angular/router";
 import {User} from "../../auth/user.model";
 import {AuthService} from "../../auth/auth.service";
 import {Subscription} from "rxjs";
+import {CommentApiService} from "./comment-api-service";
 
 @Component({
     selector: 'app-board-comment',
@@ -14,8 +14,11 @@ import {Subscription} from "rxjs";
 export class BoardCommentComponent implements OnInit, OnDestroy {
 
     // Comment variables
-    @Input() comments: BoardTemp['comments'];
-    editSw = false;
+    @Input() comments: Comment[];
+    commentEditMode = false;
+    childCommentMode: boolean;
+    parentCommentId: number;
+
     commentId: number;
     boardId: number;
 
@@ -24,7 +27,7 @@ export class BoardCommentComponent implements OnInit, OnDestroy {
     user: User;
 
     constructor(
-        private boardService: BoardService,
+        private commentApiService: CommentApiService,
         private route: ActivatedRoute,
         private authService: AuthService,
     ) {
@@ -40,28 +43,55 @@ export class BoardCommentComponent implements OnInit, OnDestroy {
         })
     }
 
+
+    // Comments
     onEditComment(id?: number) {
         if (id) {
             this.commentId = id;
         }
-        this.editSw = true;
+        this.commentEditMode = true;
     }
 
     onDeleteComment(commentId: number, boardId: number) {
-        this.boardService.deleteComment(commentId, boardId);
+        this.commentApiService.delete(commentId, boardId);
     }
 
     // Emit values (EditMode, CommentId)
+
     onEditModeChange(event: boolean) {
-        this.editSw = event;
+        this.commentEditMode = event;
     }
 
     onCommentIdChange() {
         this.commentId = undefined;
     }
 
-
     ngOnDestroy(): void {
         this.authSub.unsubscribe();
+    }
+
+    // Child comments
+
+    onNewChildComment(parentCommentId: number) {
+        this.childCommentMode = true;
+        this.commentEditMode = true;
+        this.parentCommentId = parentCommentId;
+    }
+
+    onDeleteChildComment(commentId: number, boardId: number) {
+        this.commentApiService.delete(commentId, boardId, true);
+    }
+
+    onEditChildComment(id?: number) {
+        if (id) {
+            this.commentId = id;
+        }
+        this.childCommentMode = true;
+        this.commentEditMode = true;
+
+    }
+
+    onParentCommentIdChange(event: undefined) {
+        this.parentCommentId = undefined;
     }
 }

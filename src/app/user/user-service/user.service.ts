@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {DataStorageService} from "../shared/data-storage.service";
-import {User} from "../auth/user.model";
+import {DataStorageService} from "../../shared/data-storage.service";
+import {User} from "../../auth/user.model";
 import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {Router} from "@angular/router";

@@ -2,7 +2,6 @@ import {NgModule} from "@angular/core";
 import {AlertComponent} from "./alert/alert.component";
 import {DropdownDirective} from "./dropdown/dropdown.directive";
 import {DropdownHeaderDirective} from "./dropdown/dropdown-header.directive";
-import {FormControlComponent} from "./form-control/form-control.component";
 import {PaginationComponent} from "./pagination/pagination.component";
 import {LoadingSpinnerComponent} from "./loading-spinner/loading-spinner.component";
 import {CommonModule} from "@angular/common";
@@ -14,7 +13,6 @@ import {HttpClientModule} from "@angular/common/http";
     AlertComponent,
     DropdownDirective,
     DropdownHeaderDirective,
-    FormControlComponent,
     PaginationComponent,
     LoadingSpinnerComponent,
   ],
@@ -22,7 +20,6 @@ import {HttpClientModule} from "@angular/common/http";
     AlertComponent,
     DropdownDirective,
     DropdownHeaderDirective,
-    FormControlComponent,
     PaginationComponent,
     LoadingSpinnerComponent,
 

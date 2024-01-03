@@ -14,9 +14,9 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     resolve: [BoardsResolverService],
     children: [
-      { path: 'new', component: BoardEditComponent },
-      { path: ':id', component: BoardDetailComponent, resolve: [BoardResolverService] },
-      { path: ':id/edit', component: BoardEditComponent },
+      { path: 'new', component: BoardEditComponent,},
+      { path: ':id', component: BoardDetailComponent, resolve: [BoardResolverService]},
+      { path: ':id/edit', component: BoardEditComponent,},
     ]
   },
 ]
