@@ -7,7 +7,7 @@ export interface Board {
     title: string;
     content: string;
     published: Date;
-    comments: [{
+    comments: {
         id: string;
         board: string;
         email: string;
@@ -20,8 +20,8 @@ export interface Board {
             comment: string,
             published: Date
             p_comment: string;
-        }[]
-    }]
+        }
+    }
 }
 
 export interface BoardPagination {
@@ -48,8 +48,8 @@ export interface BoardPagination {
                 comment: string,
                 published: Date
                 p_comment: string;
-            }[]
-        }[]
+            }
+        }
     }
 }
 
@@ -66,14 +66,7 @@ export interface Comment {
         comment: string,
         published: Date
         p_comment: string;
-    }[]
+    }
     published: Date;
 }
 
-export interface ChildComment {
-    id: number;
-    email: string;
-    comment: number;
-    child_comment: string;
-    published: Date;
-}

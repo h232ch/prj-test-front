@@ -17,15 +17,16 @@
     <div class="col-sm-12" style="margin-bottom: 20px">
         <app-board-comment-edit
                 [commentId]="commentId"
-                [commentEditMode]="commentEditMode"
-
                 (onCommentIdChange)="onCommentIdChange()"
+
+                [commentEditMode]="commentEditMode"
                 (onEditModeChange)="onEditModeChange($event)"
+
+                [parentCommentId]="parentCommentId"
                 (onParentCommentIdChange)="onParentCommentIdChange($event)"
 
                 [childCommentMode]="childCommentMode"
-                [parentCommentId]="parentCommentId"
-        >
+                (onChildCommentModeChange)="onChildCommentChange()">
         </app-board-comment-edit>
     </div>
 </div>
@@ -45,16 +46,17 @@
                 <dd>{{ comment.published | date: 'yyyy-MM-dd HH:mm:ss'}}</dd>
             </dl>
         </div>
-        <div class="col-sm-4 text-right" style="margin-bottom: 10px"
-             *ngIf="user.email == comment.email || user.email == 'admin@admin.com'">
+        <div class="col-sm-4 text-right" style="margin-bottom: 10px">
             <div class="btn-group" appDropdown>
                 <button type="button"
                         class="btn btn-default dropdown-toggle">
                     Manage <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a (click)="onEditComment(+comment.id)">Edit comment</a></li>
-                    <li><a (click)="onDeleteComment(+comment.id, boardId)">Delete comment</a></li>
+                    <li><a (click)="onEditComment(+comment.id)"
+                           *ngIf="user.email == comment.email || user.email == 'admin@admin.com'">Edit comment</a></li>
+                    <li><a (click)="onDeleteComment(+comment.id, boardId)"
+                           *ngIf="user.email == comment.email || user.email == 'admin@admin.com'">Delete comment</a></li>
                     <li><a (click)="onNewChildComment(+comment.id)">New comment</a></li>
                 </ul>
             </div>

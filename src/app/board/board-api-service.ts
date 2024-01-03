@@ -94,7 +94,6 @@ export class BoardApiService extends ApiClientService<Board> {
         })
     }
 
-
     search(searchData: BoardSearch) {
         let targetUrl: string;
         if (searchData.id) {

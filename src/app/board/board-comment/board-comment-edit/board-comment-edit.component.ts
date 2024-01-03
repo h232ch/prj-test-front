@@ -1,15 +1,19 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Comment} from "../../board-models/board.model";
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {ActivatedRoute, Params,} from "@angular/router";
 import {CommentApiService} from "../comment-api-service";
+import {Subject, Subscription} from "rxjs";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
     selector: 'app-board-comment-edit',
     templateUrl: './board-comment-edit.component.html',
     styleUrls: ['./board-comment-edit.component.css']
 })
-export class BoardCommentEditComponent implements OnInit {
+export class BoardCommentEditComponent implements OnInit, OnDestroy {
+    private commentApiServiceSub = new Subscription();
+
     @Input() commentEditMode = false;
     @Input() commentId: number;
 
@@ -33,7 +37,9 @@ export class BoardCommentEditComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.commentApiService.comment.subscribe(res => {
+        this.commentApiServiceSub = this.commentApiService.comment
+            // .pipe(takeUntil(this.destroy$))
+            .subscribe(res => {
             this.commentForm.patchValue({
                 comment: res.comment,
             })
@@ -124,6 +130,10 @@ export class BoardCommentEditComponent implements OnInit {
         this.onCommentIdChange.emit(undefined);
         this.onChildCommentModeChange.emit(undefined);
         this.onParentCommentIdChange.emit(undefined);
+    }
+
+    ngOnDestroy(): void {
+        this.commentApiServiceSub.unsubscribe();
     }
 
 }

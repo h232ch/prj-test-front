@@ -15,6 +15,7 @@ export class BoardCommentComponent implements OnInit, OnDestroy {
 
     // Comment variables
     @Input() comments: Comment[];
+
     commentEditMode = false;
     childCommentMode: boolean;
     parentCommentId: number;
@@ -22,14 +23,12 @@ export class BoardCommentComponent implements OnInit, OnDestroy {
     commentId: number;
     boardId: number;
 
-    // Comment user variables
-    authSub: Subscription;
-    user: User;
+    // User
+    @Input() user: User;
 
     constructor(
         private commentApiService: CommentApiService,
         private route: ActivatedRoute,
-        private authService: AuthService,
     ) {
     }
 
@@ -38,9 +37,6 @@ export class BoardCommentComponent implements OnInit, OnDestroy {
             .subscribe((params: Params) => {
                 this.boardId = +params['id'];
             });
-        this.authSub = this.authService.user.subscribe(res => {
-            this.user = res;
-        })
     }
 
 
@@ -67,7 +63,6 @@ export class BoardCommentComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.authSub.unsubscribe();
     }
 
     // Child comments
@@ -91,7 +86,11 @@ export class BoardCommentComponent implements OnInit, OnDestroy {
 
     }
 
-    onParentCommentIdChange(event: undefined) {
+    onParentCommentIdChange(event: any) {
         this.parentCommentId = undefined;
+    }
+
+    onChildCommentChange() {
+        this.childCommentMode = undefined;
     }
 }

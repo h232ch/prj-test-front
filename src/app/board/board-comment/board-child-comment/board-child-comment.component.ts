@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Board, Comment} from "../../board-models/board.model";
-import {AuthService} from "../../../auth/auth.service";
+import {Comment} from "../../board-models/board.model";
 import {User} from "../../../auth/user.model";
 
 @Component({
@@ -17,7 +16,6 @@ export class BoardChildCommentComponent implements OnInit {
     @Output() onNewChildComment = new EventEmitter<boolean>();
 
     constructor(
-        private authService: AuthService,
     ) {
     }
 

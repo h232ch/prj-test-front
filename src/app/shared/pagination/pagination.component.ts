@@ -7,7 +7,7 @@ import {BoardApiService} from "../../board/board-api-service";
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.css']
 })
-export class PaginationComponent implements OnInit, OnDestroy, DoCheck {
+export class PaginationComponent implements OnInit, OnDestroy {
   // Pagination variables
   @Input() currentPage: number;
   @Input() itemsPerPage: number;
@@ -92,10 +92,6 @@ export class PaginationComponent implements OnInit, OnDestroy, DoCheck {
     this.startPageSub.unsubscribe();
     this.boardsCurrentPageSub.unsubscribe();
     this.boardsPagSub.unsubscribe();
-  }
-
-  ngDoCheck(): void {
-    console.log("doCheck")
   }
 
 }
