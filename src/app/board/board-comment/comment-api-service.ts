@@ -17,13 +17,13 @@ export class CommentApiService extends ApiClientService<Comment> {
         private router: Router,
         private boardApiService: BoardApiService,
     ) {
-        super(httpClient, 'http://localhost:8000/api/comments/');
+        super(httpClient, 'http://ec2-54-180-86-155.ap-northeast-2.compute.amazonaws.com:8000/api/comments/');
     }
 
     create(item: Comment, id?: number, childCommentOption?: boolean, parentId?: number): void {
         let targetUrl = this.apiUrl;
         if (childCommentOption) {
-            targetUrl = 'http://localhost:8000/api/child_comments/'
+            targetUrl = 'http://ec2-54-180-86-155.ap-northeast-2.compute.amazonaws.com:8000/api/child_comments/'
         }
         this.httpClient.post<Comment>(`${targetUrl}`, item).subscribe(res => {
             this.boardApiService.getById(id);
@@ -35,7 +35,7 @@ export class CommentApiService extends ApiClientService<Comment> {
     delete(id: number, boardId?: number, childCommentOption?: boolean): void {
         let targetUrl = this.apiUrl;
         if (childCommentOption) {
-            targetUrl = 'http://localhost:8000/api/child_comments/'
+            targetUrl = 'http://ec2-54-180-86-155.ap-northeast-2.compute.amazonaws.com:8000/api/child_comments/'
         }
         this.httpClient.delete(`${this.apiUrl}${id}`).subscribe(res => {
             this.boardApiService.getById(boardId);
@@ -62,7 +62,7 @@ export class CommentApiService extends ApiClientService<Comment> {
     update(id: number, item: Comment, boardId: number, childCommentOption?:boolean): void {
         let targetUrl = this.apiUrl;
         if (childCommentOption) {
-            targetUrl = 'http://localhost:8000/api/child_comments/'
+            targetUrl = 'http://ec2-54-180-86-155.ap-northeast-2.compute.amazonaws.com:8000/api/child_comments/'
         }
         this.httpClient.put<Comment>(`${targetUrl}${id}/`, item).subscribe(res => {
             this.boardApiService.getById(boardId);

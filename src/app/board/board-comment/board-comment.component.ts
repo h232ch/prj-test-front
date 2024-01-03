@@ -66,7 +66,6 @@ export class BoardCommentComponent implements OnInit, OnDestroy {
     }
 
     // Child comments
-
     onNewChildComment(parentCommentId: number) {
         this.childCommentMode = true;
         this.commentEditMode = true;
