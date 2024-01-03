@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, DoCheck, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Subscription} from "rxjs";
 import {BoardApiService} from "../../board/board-api-service";
 
@@ -7,14 +7,15 @@ import {BoardApiService} from "../../board/board-api-service";
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.css']
 })
-export class PaginationComponent implements OnInit, OnDestroy {
+export class PaginationComponent implements OnInit, OnDestroy, DoCheck {
   // Pagination variables
   @Input() currentPage: number;
   @Input() itemsPerPage: number;
   @Input() totalItems: number;
-  @Output() pageChanged: EventEmitter<number> = new EventEmitter();
   @Input() pageSize: number;
   @Input() startPage: number;
+  // to get changed page's boards
+  @Output() pageChanged: EventEmitter<number> = new EventEmitter();
 
   // Pagination static variables
   private staticPageSize = 4;
@@ -91,6 +92,10 @@ export class PaginationComponent implements OnInit, OnDestroy {
     this.startPageSub.unsubscribe();
     this.boardsCurrentPageSub.unsubscribe();
     this.boardsPagSub.unsubscribe();
+  }
+
+  ngDoCheck(): void {
+    console.log("doCheck")
   }
 
 }
