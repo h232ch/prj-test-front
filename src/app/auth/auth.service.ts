@@ -12,8 +12,8 @@ import {Board} from "../board/board-models/board.model";
 export class AuthService {
     user = new BehaviorSubject(null);
     error: Subject<string> = new Subject<string>();
-    registerUrl = "http://ec2-54-180-86-155.ap-northeast-2.compute.amazonaws.com:8000/api/register/";
-    loginUrl = "http://ec2-54-180-86-155.ap-northeast-2.compute.amazonaws.com:8000/api/token/";
+    registerUrl = "http://127.0.0.1:8000/api/register/";
+    loginUrl = "http://127.0.0.1:8000/api/token/";
 
     constructor(
         private httpClient: HttpClient,
