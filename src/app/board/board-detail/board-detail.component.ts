@@ -22,6 +22,7 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
     // error control
     error: string;
     private destroySub = new Subject<void>();
+    isLoading: boolean = false;
 
     constructor(
         private route: ActivatedRoute,

@@ -26,6 +26,7 @@ export class BoardListComponent implements OnInit, OnDestroy {
     startPage: number = 1;
     pageSize: number = 4;
     boardsLength: number;
+    isLoading: boolean = false;
 
     constructor(
         private boardApiService: BoardApiService,
@@ -35,6 +36,13 @@ export class BoardListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.isLoading = true;
+        this.boardApiService.isLoading
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(res => {
+            this.isLoading = res;
+        })
+
         this.boardApiService.boardsChanged
             .pipe(takeUntil(this.destroy$))
             .subscribe(
@@ -45,6 +53,7 @@ export class BoardListComponent implements OnInit, OnDestroy {
                     } else {
                         this.boardsLength = this.boards.length;
                     }
+                    this.isLoading = false;
                 }
             );
         // for search data

@@ -25,6 +25,10 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.authService.isLoading
+        .subscribe(res => {
+          this.isLoading = res;
+        })
     this.errorSub = this.authService.error
       .subscribe(res => {
       this.error = res;
@@ -65,8 +69,6 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.isLoading = true;
-
     if (this.loginMode) {
       const user: User = this.userForm.value.userData;
       this.authSub = this.authService.login(user);
@@ -74,7 +76,7 @@ export class AuthComponent implements OnInit, OnDestroy {
       const user: User = this.userForm.value.userData;
       this.authSub = this.authService.join(user);
     }
-    this.isLoading = false;
+    // this.isLoading = false;
   }
 
   onSwitchMode() {

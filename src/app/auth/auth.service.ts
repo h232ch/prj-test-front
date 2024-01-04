@@ -12,6 +12,8 @@ import {Board} from "../board/board-models/board.model";
 export class AuthService {
     user = new BehaviorSubject(null);
     error: Subject<string> = new Subject<string>();
+    isLoading: Subject<boolean> = new Subject<boolean>();
+
     registerUrl = "http://54.180.86.155:8000/api/register/";
     loginUrl = "http://54.180.86.155:8000/api/token/";
 
@@ -22,6 +24,7 @@ export class AuthService {
     }
 
     login(user: User) {
+        this.isLoading.next(true);
         return this.httpClient.post<User>(this.loginUrl, user)
             .pipe(catchError(this.handlerError))
             .subscribe(res => {
@@ -30,6 +33,7 @@ export class AuthService {
                         res.id,
                         res.access,
                         res.refresh);
+                    // this.isLoading.next(false);
                 }, errorMessage => {
                     this.error.next(errorMessage.detail);
                 }
@@ -37,10 +41,12 @@ export class AuthService {
     }
 
     join(user: User) {
+        this.isLoading.next(true);
         return this.httpClient.post<User>(this.registerUrl, user)
             .pipe(catchError(this.handlerError))
             .subscribe(res => {
                 this.login(user);
+                // this.isLoading.next(false);
             }, errorMessage => {
                 this.error.next(errorMessage.detail);
             })
