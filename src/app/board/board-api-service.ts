@@ -97,6 +97,7 @@ export class BoardApiService extends ApiClientService<Board> {
     this.httpClient.get<Board>(`${this.apiUrl}${id}`).subscribe(res => {
       this.boardChanged.next(res);
       this.isLoading.next(false);
+      window.scrollTo(0, 0);
     }, errorMessage => {
       this.isLoading.next(false);
       this.error.next(errorMessage.error);
