@@ -36,7 +36,7 @@ export class AuthService {
                     this.isLoading.next(false);
                 }, errorMessage => {
                     this.error.next(errorMessage.detail);
-                    this.isLoading.next(false);
+                    // this.isLoading.next(false);
                 }
             )
     }
@@ -50,7 +50,7 @@ export class AuthService {
                 this.isLoading.next(false);
             }, errorMessage => {
                 this.error.next(errorMessage.detail);
-                this.isLoading.next(false);
+                // this.isLoading.next(false);
             })
     }
 

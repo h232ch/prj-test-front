@@ -73,5 +73,6 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
 
     onHandleError() {
         this.error = undefined;
+        this.isLoading = false;
     }
 }
