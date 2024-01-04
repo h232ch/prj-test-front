@@ -49,6 +49,7 @@ export class BoardApiService extends ApiClientService<Board> {
       this.boardsChanged.next(this.boards);
       this.isLoading.next(false);
     }, errorMessage => {
+      this.isLoading.next(false);
       this.error.next(errorMessage.error);
     });
   }
@@ -62,6 +63,7 @@ export class BoardApiService extends ApiClientService<Board> {
       this.startPage.next(1);
       this.router.navigate(['/boards/' + res.id])
     }, errorMessage => {
+      this.isLoading.next(false);
       this.error.next(errorMessage.error);
     })
   }
@@ -74,8 +76,8 @@ export class BoardApiService extends ApiClientService<Board> {
       this.initPagination();
       this.router.navigate(['/boards/' + res.id]);
     }, errorMessage => {
+      this.isLoading.next(false);
       this.error.next(errorMessage.error);
-      // this.isLoading.next(false);
     })
   }
 
@@ -85,8 +87,8 @@ export class BoardApiService extends ApiClientService<Board> {
       this.startPage.next(1);
       this.router.navigate(['/boards']);
     }, errorMessage => {
+      this.isLoading.next(false);
       this.error.next(errorMessage.error);
-      // this.isLoading.next(false);
     });
   }
 
@@ -96,8 +98,8 @@ export class BoardApiService extends ApiClientService<Board> {
       this.boardChanged.next(res);
       this.isLoading.next(false);
     }, errorMessage => {
+      this.isLoading.next(false);
       this.error.next(errorMessage.error);
-      // this.isLoading.next(false);
     })
   }
 
@@ -116,8 +118,8 @@ export class BoardApiService extends ApiClientService<Board> {
       this.boardsChanged.next(this.boards.slice());
 
     }, errorMessage => {
+      this.isLoading.next(false);
       this.error.next(errorMessage.error);
-      // this.isLoading.next(false);
     });
   }
 

@@ -85,8 +85,8 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onHandleError() {
-    this.error = null;
     this.isLoading = false;
+    this.error = null;
   }
 
   ngOnDestroy(): void {

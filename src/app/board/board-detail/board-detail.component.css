@@ -5,6 +5,7 @@ p {
 }
 
 dd, dt {
+  word-wrap: break-word;
   font-size: 14px;
 }
 
