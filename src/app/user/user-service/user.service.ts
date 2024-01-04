@@ -14,7 +14,7 @@ export class UserService extends DataStorageService<User> {
     private httpClient: HttpClient,
     private router: Router,
   ) {
-    super(httpClient, 'http://127.0.0.1:8000/api/users');
+    super(httpClient, 'http://54.180.86.155:8000/api/users');
   }
 
   create(item: User): Observable<User> {

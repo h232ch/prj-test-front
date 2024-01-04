@@ -30,7 +30,7 @@ export class BoardApiService extends ApiClientService<Board> {
         private httpClient: HttpClient,
         private router: Router,
     ) {
-        super(httpClient, 'http://127.0.0.1:8000/api/boards/');
+        super(httpClient, 'http://54.180.86.155:8000/api/boards/');
     }
 
     getAll(id?: number) {
