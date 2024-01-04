@@ -33,9 +33,10 @@ export class AuthService {
                         res.id,
                         res.access,
                         res.refresh);
-                    // this.isLoading.next(false);
+                    this.isLoading.next(false);
                 }, errorMessage => {
                     this.error.next(errorMessage.detail);
+                    this.isLoading.next(false);
                 }
             )
     }
@@ -46,9 +47,10 @@ export class AuthService {
             .pipe(catchError(this.handlerError))
             .subscribe(res => {
                 this.login(user);
-                // this.isLoading.next(false);
+                this.isLoading.next(false);
             }, errorMessage => {
                 this.error.next(errorMessage.detail);
+                this.isLoading.next(false);
             })
     }
 

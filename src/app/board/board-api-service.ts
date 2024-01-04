@@ -75,6 +75,7 @@ export class BoardApiService extends ApiClientService<Board> {
       this.router.navigate(['/boards/' + res.id]);
     }, errorMessage => {
       this.error.next(errorMessage.error);
+      this.isLoading.next(false);
     })
   }
 
@@ -85,6 +86,7 @@ export class BoardApiService extends ApiClientService<Board> {
       this.router.navigate(['/boards']);
     }, errorMessage => {
       this.error.next(errorMessage.error);
+      this.isLoading.next(false);
     });
   }
 
@@ -115,6 +117,7 @@ export class BoardApiService extends ApiClientService<Board> {
 
     }, errorMessage => {
       this.error.next(errorMessage.error);
+      this.isLoading.next(false);
     });
   }
 
