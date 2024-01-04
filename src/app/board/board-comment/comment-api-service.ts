@@ -50,7 +50,7 @@ export class CommentApiService extends ApiClientService<Comment> {
     getById(id: number, childCommentOption?: boolean): void {
         let targetUrl = this.apiUrl;
         if (childCommentOption) {
-            targetUrl = 'http://localhost:8000/api/child_comments/'
+            targetUrl = 'http://ec2-54-180-86-155.ap-northeast-2.compute.amazonaws.com:8000/api/child_comments/'
         }
         this.httpClient.get<Comment>(`${targetUrl}${id}`).subscribe(res => {
             this.comment.next(res);
