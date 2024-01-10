@@ -15,7 +15,9 @@ export class AuthService {
   isLoading: Subject<boolean> = new Subject<boolean>();
 
   registerUrl = "http://54.180.86.155:8000/api/register/";
+  // registerUrl = "http://localhost:8000/api/register/";
   loginUrl = "http://54.180.86.155:8000/api/token/";
+  // loginUrl = "http://localhost:8000/api/token/";
 
   constructor(
     private httpClient: HttpClient,

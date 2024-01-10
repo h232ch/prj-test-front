@@ -1,0 +1,6 @@
+[submodule "path/to/submodule"]
+	path = path/to/submodule
+	url = https://github.com/h232ch/prj-test
+[submodule "prj-test"]
+	path = prj-test
+	url = https://github.com/h232ch/prj-test.git
